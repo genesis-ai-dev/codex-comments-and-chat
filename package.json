@@ -2,7 +2,7 @@
   "name": "codex-chat-and-comments",
   "description": "Codex Chat and comments webviews for scripture translation support",
   "version": "0.0.1",
-  "publisher": "codex",
+  "publisher": "project-accelerate",
   "private": true,
   "license": "MIT",
   "repository": {
