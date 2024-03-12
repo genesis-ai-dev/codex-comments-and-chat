@@ -90,6 +90,10 @@
     },
     "commands": [
       {
+        "command": "codex-chat-and-comments.createFiles",
+        "title": "Create data files"
+      },
+      {
         "command": "commentsExtension.createNote",
         "title": "Create Note",
         "enablement": "!commentIsEmpty"

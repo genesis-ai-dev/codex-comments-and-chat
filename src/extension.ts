@@ -17,37 +17,43 @@ export async function activate(context: vscode.ExtensionContext) {
   registerChatProvider(context);
   registerCommentsWebviewProvider(context);
   registerCommentsProvider(context);
-
-  if (ROOT_PATH) {
-    vscode.window.showInformationMessage(
-      "Checking for missing project files..."
-    );
-    for (const fileToPopulate of PATHS_TO_POPULATE) {
-      const fullPath = vscode.Uri.joinPath(
-        vscode.Uri.file(ROOT_PATH),
-        fileToPopulate.filePath
-      );
-      try {
-        await vscode.workspace.fs.stat(fullPath);
-      } catch (error) {
-        // Determine if the missing path is a file or a directory based on its name
-        if (fileToPopulate.filePath.includes(".")) {
-          // Assuming it's a file if there's an extension
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "codex-chat-and-comments.createFiles",
+      async () => {
+        if (ROOT_PATH) {
           vscode.window.showInformationMessage(
-            `Creating file: ${fileToPopulate}`
+            "Checking for missing project files..."
           );
-          await vscode.workspace.fs.writeFile(
-            fullPath,
-            new TextEncoder().encode(fileToPopulate.defaultContent || "")
-          ); // Create an empty file
-        } else {
-          // Assuming it's a directory if there's no file extension
-          vscode.window.showInformationMessage(
-            `Creating directory: ${fileToPopulate}`
-          );
-          await vscode.workspace.fs.createDirectory(fullPath);
+          for (const fileToPopulate of PATHS_TO_POPULATE) {
+            const fullPath = vscode.Uri.joinPath(
+              vscode.Uri.file(ROOT_PATH),
+              fileToPopulate.filePath
+            );
+            try {
+              await vscode.workspace.fs.stat(fullPath);
+            } catch (error) {
+              // Determine if the missing path is a file or a directory based on its name
+              if (fileToPopulate.filePath.includes(".")) {
+                // Assuming it's a file if there's an extension
+                vscode.window.showInformationMessage(
+                  `Creating file: ${fileToPopulate.filePath}`
+                );
+                await vscode.workspace.fs.writeFile(
+                  fullPath,
+                  new TextEncoder().encode(fileToPopulate.defaultContent || "")
+                ); // Create an empty file
+              } else {
+                // Assuming it's a directory if there's no file extension
+                vscode.window.showInformationMessage(
+                  `Creating directory: ${fileToPopulate.filePath}`
+                );
+                await vscode.workspace.fs.createDirectory(fullPath);
+              }
+            }
+          }
         }
       }
-    }
-  }
+    )
+  );
 }
