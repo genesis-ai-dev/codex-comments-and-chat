@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "UPDATE THIS"
+    "url": "https://github.com/genesis-ai-dev/codex-comments-and-chat"
   },
   "engines": {
     "vscode": "^1.74.0"
