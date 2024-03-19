@@ -559,6 +559,7 @@ function App() {
           padding: "1em",
           display: "flex",
           width: "100%",
+          boxSizing: "border-box",
         }}
       >
         {messageLog.map((messageLogItem, index) => (
