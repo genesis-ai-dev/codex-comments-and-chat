@@ -1,7 +1,7 @@
 {
-  "name": "codex-chat-and-comments",
-  "description": "Codex Chat and comments webviews for scripture translation support",
-  "version": "0.0.1",
+  "name": "codex-copilot",
+  "description": "Codex Copilot for translation support. Includes chat, comments, and inline AI text completions.",
+  "version": "0.0.2",
   "publisher": "project-accelerate",
   "private": true,
   "license": "MIT",
@@ -90,6 +90,69 @@
         }
       ]
     },
+    "walkthroughs": [
+      {
+        "id": "setupLocalEnvironment",
+        "title": "Set up Translator's Copilot",
+        "description": "A simple walkthrough to help you set up a large language model on your device to benefit from the Copilot feature.",
+        "steps": [
+          {
+            "id": "downloadLMStudio",
+            "title": "Download LM Studio",
+            "description": "Download LM Studio to get a local LLM running to power your Translator's Copilot.\n\n[Download LM Studio](https://lmstudio.ai)",
+            "media": {
+              "image": "./src/media/lmstudio.gif",
+              "altText": "LM Studio"
+            }
+          },
+          {
+            "id": "downloadModel",
+            "title": "Download Model",
+            "media": {
+              "image": "./src/media/download-model.png",
+              "altText": "Download Model"
+            },
+            "description": "Download the model you want to use for your Copilot. Not sure which one to try? Try searching LM Studio for `TheBloke/neural-chat-7B-v3-1-GGUF` (note the specific file you want is the `neural-chat-7b-v3-1.Q4_K_S.gguf` variant)."
+          },
+          {
+            "id": "loadModel",
+            "title": "Initialize Downloaded Model",
+            "media": {
+              "image": "./src/media/load-model.png",
+              "altText": "Load Model"
+            },
+            "description": "Load the model you want to use for your Copilot. Click on the model dropdown at the top-center of the LM Studio screen, then select the model you downloaded (e.g., `neural-chat-7b-v3-1.Q4_K_S.gguf`)."
+          },
+          {
+            "id": "startLocalServer",
+            "title": "Start AI Model",
+            "media": {
+              "image": "./src/media/start-server.png",
+              "altText": "Start AI Model"
+            },
+            "description": "Make the AI model you downloaded accessible by the Translator's Copilot by clicking on the green play 'Start Server' button in LM Studio."
+          },
+          {
+            "id": "tryChatting",
+            "title": "Try Chatting with the Translator's Copilot",
+            "media": {
+              "image": "./src/media/try-chatting.png",
+              "altText": "Try Chatting"
+            },
+            "description": "Try chatting with the Translator's Copilot by clicking on the chat button in the sidebar, then clicking on the 'Chat' button in the top-right of the chat window."
+          },
+          {
+            "id": "tryInlineCompletions",
+            "title": "Try Inline Completions",
+            "media": {
+              "image": "./src/media/inline-completions.png",
+              "altText": "Try Inline Completions"
+            },
+            "description": "Try inline completions with the Translator's Copilot by clicking on the chat button in the sidebar, then clicking on the 'Chat' button in the top-right of the chat window."
+          }
+        ]
+      }
+    ],
     "commands": [
       {
         "command": "codex-chat-and-comments.createFiles",
@@ -227,6 +290,7 @@
     "@vscode/codicons": "^0.0.35"
   },
   "extensionDependencies": [
-    "project-accelerate.shared-state-store"
+    "project-accelerate.shared-state-store",
+    "project-accelerate.codex-editor-extension"
   ]
 }
