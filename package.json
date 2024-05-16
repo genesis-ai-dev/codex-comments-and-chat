@@ -1,7 +1,7 @@
 {
   "name": "codex-copilot",
   "description": "Codex Copilot for translation support. Includes chat, comments, and inline AI text completions.",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "publisher": "project-accelerate",
   "private": true,
   "license": "MIT",
@@ -30,8 +30,12 @@
         "properties": {
           "translators-copilot.llmEndpoint": {
             "type": "string",
-            "default": "http://localhost:1234/v1",
-            "description": "The endpoint for the completion API. Either OpenAI or local LLM. We would suggest using [LM Studio](https://lmstudio.ai)"
+            "enum": [
+              "http://localhost:1234/v1",
+              "https://api.openai.com/v1"
+            ],
+            "default": "https://api.openai.com/v1",
+            "description": "The endpoint for the completion API. Choose between local LLM or OpenAI endpoints. We would suggest using [LM Studio](https://lmstudio.ai) for local LLM."
           },
           "translators-copilot.api_key": {
             "type": "string",
@@ -40,6 +44,14 @@
           },
           "translators-copilot.model": {
             "type": "string",
+            "enum": [
+              "local",
+              "gpt-3.5-turbo",
+              "gpt-4",
+              "gpt-4-turbo",
+              "gpt-4o",
+              "davinci"
+            ],
             "default": "gpt-3.5-turbo",
             "description": "Model name selected for inference. Ignorable for local LLM."
           },

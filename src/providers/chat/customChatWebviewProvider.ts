@@ -170,7 +170,7 @@ const processFetchResponse = async (
           if (sendChunk) {
             const currentTime = Date.now();
             const timeSinceLastMessageInMs = currentTime - lastPostMessageTime;
-            const bufferTimeInMs = 10;
+            const bufferTimeInMs = 100;
             if (timeSinceLastMessageInMs < bufferTimeInMs) {
               await new Promise((resolve) =>
                 setTimeout(resolve, bufferTimeInMs - timeSinceLastMessageInMs)
@@ -409,7 +409,7 @@ export class CustomWebviewProvider {
             case "openSettings": {
               vscode.commands.executeCommand(
                 "workbench.action.openSettings",
-                "translators-copilot"
+                "@ext:project-accelerate.codex-copilot"
               );
               break;
             }
