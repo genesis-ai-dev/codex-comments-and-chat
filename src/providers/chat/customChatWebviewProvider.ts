@@ -105,8 +105,7 @@ const loadWebviewHtml = (
       Use a content security policy to only allow loading images from https or from our extension directory,
       and only allow scripts that have a specific nonce.
     -->
-    <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${
-      webviewView.webview.cspSource
+    <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webviewView.webview.cspSource
     }; script-src 'nonce-${nonce}';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="${styleResetUri}" rel="stylesheet">
@@ -323,7 +322,7 @@ export class CustomWebviewProvider {
                   return messageForAi;
                 }),
                 model: undefined as any,
-                stop: ["\n\n", "###", "<|endoftext|>"], // ? Not sure if it matters if we pass this here.
+                stop: ["\n\n", "###", "<|endoftext|>", "<|endofchat|>", "<|im_end|>"], // ? Not sure if it matters if we pass this here.
               };
               if (model) {
                 data.model = model;
@@ -410,8 +409,16 @@ export class CustomWebviewProvider {
             case "openSettings": {
               vscode.commands.executeCommand(
                 "workbench.action.openSettings",
-                "@translators-copilot"
+                "translators-copilot"
               );
+              break;
+            }
+            case "getChatSystemMessage": {
+              const systemMessage = config.get("chatSystemMessage");
+              webviewView.webview.postMessage({
+                command: "chatSystemMessage",
+                content: systemMessage,
+              });
               break;
             }
             default:

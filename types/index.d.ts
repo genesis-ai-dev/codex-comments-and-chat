@@ -88,4 +88,24 @@ type ChatPostMessages =
   | { command: "deleteThread"; threadId: string }
   | { command: "fetchThread" }
   | { command: "abort-fetch" }
-  | { command: "openSettings" };
+  | { command: "openSettings" }
+  | { command: "getChatSystemMessage"; content: string };
+
+  export enum ChatLanguages {
+    English = 'English',
+    Hindi = 'Hindi',
+    Tamil = 'Tamil',
+    Telugu = 'Telugu',
+    Kannada = 'Kannada',
+    Spanish = 'Spanish',
+    French = 'French',
+    German = 'German',
+    Italian = 'Italian',
+    Dutch = 'Dutch',
+    Portuguese = 'Portuguese',
+    Russian = 'Russian',
+    Chinese = 'Chinese',
+    Japanese = 'Japanese',
+    Korean = 'Korean',
+    Arabic = 'Arabic'
+  }

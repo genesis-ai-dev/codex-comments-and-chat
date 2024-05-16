@@ -7,6 +7,8 @@ const apiKey = config.get("api_key");
 const model = config.get("model");
 const temperature = config.get("temperature");
 const maxTokens = config.get("max_tokens");
+// FIXME: add a system prompt configuration, and, eventually, add toggles to 'useDictionary' and 'useSimilarVerses'
+// FIXME: stop at number:number or book number:number
 const maxLength = 4000;
 let shouldProvideCompletion = false;
 export async function provideInlineCompletionItems(
