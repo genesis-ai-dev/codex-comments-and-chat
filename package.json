@@ -26,7 +26,7 @@
   "contributes": {
     "configuration": [
       {
-        "title": "translators-copilot",
+        "title": "Translators Copilot",
         "properties": {
           "translators-copilot.llmEndpoint": {
             "type": "string",
@@ -64,6 +64,45 @@
             "type": "number",
             "default": 0.2,
             "description": "The randomness level of output generation. A higher value leads to more random outputs."
+          },
+          "translators-copilot.main_chat_language": {
+            "type": "string",
+            "default": "English",
+            "enum": [
+              "English",
+              "Spanish",
+              "French",
+              "German",
+              "Italian",
+              "Dutch",
+              "Portuguese",
+              "Russian",
+              "Chinese",
+              "Japanese",
+              "Korean",
+              "Arabic",
+              "Turkish",
+              "Vietnamese",
+              "Thai",
+              "Indonesian",
+              "Malay",
+              "Filipino",
+              "Bengali",
+              "Punjabi",
+              "Gujarati",
+              "Marathi",
+              "Odia",
+              "Tamil",
+              "Telugu",
+              "Kannada",
+              "Hindi"
+            ],
+            "description": "The main language used for the chat interface."
+          },
+          "translators-copilot.chatSystemMessage": {
+            "type": "string",
+            "default": "This is a chat between a helpful Bible translation assistant and a Bible translator. The assistant will provide helpful answers and suggestions to the translator, often relying on the translator's current project and reference resources. The translator will ask questions and provide context to the assistant. The translator's aim is to be consistent and faithful in a fairly literalistic rendering of the source text.",
+            "description": "The system message controlling the behavior of the chat system. You can customize this message to fit your needs, or ask the copilot to translate it for you into your preferred interface language."
           }
         }
       }
@@ -288,8 +327,8 @@
     "watch": "tsc -w -p ./"
   },
   "devDependencies": {
-    "@types/uuid": "^9.0.7",
     "@types/node": "^20.11.25",
+    "@types/uuid": "^9.0.7",
     "@types/vscode": "^1.73.0",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
@@ -297,9 +336,10 @@
     "typescript": "^5.3.2"
   },
   "dependencies": {
+    "@vscode/codicons": "^0.0.35",
+    "@vscode/test-electron": "^2.3.10",
     "codex-types": "^0.0.2",
-    "path": "^0.12.7",
-    "@vscode/codicons": "^0.0.35"
+    "path": "^0.12.7"
   },
   "extensionDependencies": [
     "project-accelerate.shared-state-store",

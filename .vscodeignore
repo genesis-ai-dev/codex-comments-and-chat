@@ -6,6 +6,7 @@
 !out/**
 
 !webviews/**/dist/**
+!webviews/codex-webviews/dist/**
 
 !src/media/**
 !src/assets/reset.css

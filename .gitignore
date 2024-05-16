@@ -6,3 +6,7 @@ node_modules
 .DS_Store
 
 /webviews/codex-webviews/pnpm-lock.yaml
+.vscode/settings.json
+comments.json
+pnpm-lock.yaml
+.vscode/settings.json
