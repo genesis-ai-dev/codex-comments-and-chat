@@ -410,7 +410,7 @@ export class CustomWebviewProvider {
             case "openSettings": {
               vscode.commands.executeCommand(
                 "workbench.action.openSettings",
-                "@translators-copilot"
+                "@ext:project-accelerate.codex-copilot"
               );
               break;
             }
