@@ -1,7 +1,7 @@
 {
   "name": "codex-copilot",
   "description": "Codex Copilot for translation support. Includes chat, comments, and inline AI text completions.",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "publisher": "project-accelerate",
   "private": true,
   "license": "MIT",
@@ -102,32 +102,32 @@
               "ਪੰਜਾਬੀ (Punjabi)",
               "मराठी (Marathi)",
               "ଓଡ଼ିଆ (Odia)",
-              "Swahili (Kiswahili)",
-              "Urdu (اردو)",
-              "Persian (فارسی)",
+              "Kiswahili (Swahili)",
+              "اردو (Urdu)",
+              "فارسی (Persian)",
               "Hausa",
-              "Amharic (አማርኛ)",
-              "Javanese (ꦧꦱꦗꦮ)",
-              "Burmese (မြန်မာဘာသာ)",
-              "Swedish (Svenska)",
-              "Norwegian (Norsk)",
-              "Finnish (Suomi)",
-              "Danish (Dansk)",
-              "Hebrew (עברית)",
-              "Ukrainian (Українська)",
-              "Polish (Polski)",
-              "Romanian (Română)",
-              "Czech (Čeština)",
-              "Hungarian (Magyar)",
-              "Greek (Ελληνικά)",
-              "Serbian (Српски)",
-              "Croatian (Hrvatski)",
-              "Bulgarian (Български)",
-              "Slovak (Slovenčina)",
-              "Malayalam (മലയാളം)",
-              "Sinhala (සිංහල)",
-              "Khmer (ភាសាខ្មែរ)",
-              "Lao (ພາສາລາວ)"
+              "አማርኛ (Amharic)",
+              "ꦧꦱꦗꦮ (Javanese)",
+              "မြန်မာဘာသာ (Burmese)",
+              "Svenska (Swedish)",
+              "Norsk (Norwegian)",
+              "Suomi (Finnish)",
+              "Dansk (Danish)",
+              "עברית (Hebrew)",
+              "Українська (Ukrainian)",
+              "Polski (Polish)",
+              "Română (Romanian)",
+              "Čeština (Czech)",
+              "Magyar (Hungarian)",
+              "Ελληνικά (Greek)",
+              "Српски (Serbian)",
+              "Hrvatski (Croatian)",
+              "Български (Bulgarian)",
+              "Slovenčina (Slovak)",
+              "മലയാളം (Malayalam)",
+              "සිංහල (Sinhala)",
+              "ភាសាខ្មែរ (Khmer)",
+              "ພາສາລາວ (Lao)"
             ],
             "description": "The main language used for the chat interface."
           },
@@ -176,8 +176,8 @@
     },
     "walkthroughs": [
       {
-        "id": "setupLocalEnvironment",
-        "title": "Set up Translator's Copilot",
+        "id": "setupLocalLLM",
+        "title": "Set up Local/Offline Translator's Copilot",
         "description": "A simple walkthrough to help you set up a large language model on your device to benefit from the Copilot feature.",
         "steps": [
           {
@@ -217,6 +217,15 @@
             "description": "Make the AI model you downloaded accessible by the Translator's Copilot by clicking on the green play 'Start Server' button in LM Studio."
           },
           {
+            "id": "setMainChatLanguage",
+            "title": "Set Main Chat Language",
+            "media": {
+              "image": "./src/media/set-main-chat-language.png",
+              "altText": "Set Main Chat Language"
+            },
+            "description": "Set your main chat language (also accessible in the Translator's Copilot settings).\n\n[Set Chat Language](command:translators-copilot.setMainChatLanguage)"
+          },
+          {
             "id": "tryChatting",
             "title": "Try Chatting with the Translator's Copilot",
             "media": {
@@ -229,7 +238,59 @@
             "id": "tryInlineCompletions",
             "title": "Try Inline Completions",
             "media": {
-              "image": "./src/media/inline-completions.png",
+              "image": "./src/media/inline-completions.gif",
+              "altText": "Try Inline Completions"
+            },
+            "description": "Try inline completions with the Translator's Copilot by clicking on the chat button in the sidebar, then clicking on the 'Chat' button in the top-right of the chat window."
+          }
+        ]
+      },
+      {
+        "id": "setupOpenAILLM",
+        "title": "Set up OpenAI Translator's Copilot",
+        "description": "A simple walkthrough to help you set up a large language model on your device to benefit from the Copilot feature.",
+        "steps": [
+          {
+            "id": "getAPIKey",
+            "title": "Get OpenAI API Key",
+            "description": "Get your OpenAI API key from the OpenAI website.\n\n[Get OpenAI API Key](https://platform.openai.com/signup)",
+            "media": {
+              "image": "./src/media/openai-api-key.png",
+              "altText": "OpenAI API Key"
+            }
+          },
+          {
+            "id": "setAPIKey",
+            "title": "Set OpenAI API Key",
+            "media": {
+              "image": "./src/media/set-api-key.png",
+              "altText": "Set API Key"
+            },
+            "description": "Set your OpenAI API key in the Translator's Copilot settings.\n\n[Set API Key](command:translators-copilot.setLLMApiKey)"
+          },
+          {
+            "id": "setMainChatLanguage",
+            "title": "Set Main Chat Language",
+            "media": {
+              "image": "./src/media/set-main-chat-language.png",
+              "altText": "Set Main Chat Language"
+            },
+            "description": "Set your main chat language (also accessible in the Translator's Copilot settings).\n\n[Set Chat Language](command:translators-copilot.setMainChatLanguage)"
+          },
+          {
+            "id": "tryChatting",
+            "title": "Try Chatting with the Translator's Copilot",
+            "media": {
+              "image": "./src/media/try-chatting.png",
+              "altText": "Try Chatting"
+            },
+            "description": "Try chatting with the Translator's Copilot by clicking on the chat button in the sidebar, then clicking on the 'Chat' button in the top-right of the chat window."
+          },
+          {
+            "id": "tryInlineCompletions",
+            "title": "Try Inline Completions",
+            "media": {
+              "image": "./src/media/inline-completions.gif",
               "altText": "Try Inline Completions"
             },
             "description": "Try inline completions with the Translator's Copilot by clicking on the chat button in the sidebar, then clicking on the 'Chat' button in the top-right of the chat window."
@@ -287,6 +348,14 @@
       {
         "command": "commentsExtension.dispose",
         "title": "Remove All Notes"
+      },
+      {
+        "command": "translators-copilot.setMainChatLanguage",
+        "title": "Set Main Chat Language"
+      },
+      {
+        "command": "translators-copilot.setLLMApiKey",
+        "title": "Set LLM API Key"
       }
     ],
     "menus": {
