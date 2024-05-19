@@ -323,7 +323,7 @@ export class CustomWebviewProvider {
               }
 
               if (messages[0].role === 'system') {
-                const accessibilityNote = `\n\nNote carefully, 'assistant' must always respond to 'user' in ${mainChatLanguage}, even if the user has used some English or another language to communicate. It is *critical for accessibility* to respond only in ${mainChatLanguage}`;
+                const accessibilityNote = `\n\nNote carefully, 'assistant' must always respond to 'user' in ${mainChatLanguage}, even if the user has used some English or another language to communicate. It is *critical for accessibility* to respond only in ${mainChatLanguage} (though you can translate some piece of text into any language 'user' requests)`;
                 if (!messages[0].content.includes(accessibilityNote)) {
                   messages[0].content += `${accessibilityNote}`;
                 }
@@ -343,7 +343,7 @@ export class CustomWebviewProvider {
                   return messageForAi;
                 }),
                 model: undefined as any,
-                stop: ["\n\n", "###", "<|endoftext|>"], // ? Not sure if it matters if we pass this here.
+                stop: ["\n\n\n", "###", "<|endoftext|>"], // ? Not sure if it matters if we pass this here.
               };
               if (model) {
                 data.model = model;
