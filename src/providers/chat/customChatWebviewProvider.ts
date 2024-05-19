@@ -322,7 +322,7 @@ export class CustomWebviewProvider {
                   return messageForAi;
                 }),
                 model: undefined as any,
-                stop: ["\n\n", "###", "<|endoftext|>", "<|endofchat|>", "<|im_end|>"], // ? Not sure if it matters if we pass this here.
+                stop: ["\n\n", "###", "<|endoftext|>"], // ? Not sure if it matters if we pass this here.
               };
               if (model) {
                 data.model = model;
@@ -411,14 +411,6 @@ export class CustomWebviewProvider {
                 "workbench.action.openSettings",
                 "@ext:project-accelerate.codex-copilot"
               );
-              break;
-            }
-            case "getChatSystemMessage": {
-              const systemMessage = config.get("chatSystemMessage");
-              webviewView.webview.postMessage({
-                command: "chatSystemMessage",
-                content: systemMessage,
-              });
               break;
             }
             default:
