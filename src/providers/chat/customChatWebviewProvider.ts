@@ -306,15 +306,36 @@ export class CustomWebviewProvider {
         try {
           switch (message.command) {
             case "fetch": {
+              const mainChatLanguage = vscode.workspace.getConfiguration('translators-copilot').get('main_chat_language', 'English');
+
               abortController = new AbortController();
               const url = endpoint + "/chat/completions";
+              const messages = JSON.parse(message.messages) as ChatMessageWithContext[];
+
+              const systemMessage = messages.find((message) => message.role === 'system');
+
+              if (!systemMessage) {
+                messages.unshift({
+                  content: vscode.workspace.getConfiguration('translators-copilot').get('chatSystemMessage', ''),
+                  role: 'system',
+                  createdAt: new Date().toISOString(),
+                });
+              }
+
+              if (messages[0].role === 'system') {
+                const accessibilityNote = `\n\nNote carefully, 'assistant' must always respond to 'user' in ${mainChatLanguage}, even if the user has used some English or another language to communicate. It is *critical for accessibility* to respond only in ${mainChatLanguage}`;
+                if (!messages[0].content.includes(accessibilityNote)) {
+                  messages[0].content += `${accessibilityNote}`;
+                }
+              }
+
+              console.log({ messages });
+
               const data = {
                 max_tokens: maxTokens,
                 temperature: temperature,
                 stream: true,
-                messages: (
-                  JSON.parse(message.messages) as ChatMessageWithContext[]
-                ).map((message) => {
+                messages: messages.map((message) => {
                   const messageForAi: ChatMessage = {
                     content: message.content,
                     role: message.role,

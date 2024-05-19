@@ -78,9 +78,8 @@ const loadWebviewHtml = (
       Use a content security policy to only allow loading images from https or from our extension directory,
       and only allow scripts that have a specific nonce.
     -->
-    <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${
-        webviewView.webview.cspSource
-    }; script-src 'nonce-${nonce}';">
+    <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webviewView.webview.cspSource
+        }; script-src 'nonce-${nonce}';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="${styleResetUri}" rel="stylesheet">
     <link href="${styleVSCodeUri}" rel="stylesheet">
@@ -105,7 +104,7 @@ const sendCommentsToWebview = async (webviewView: vscode.WebviewView) => {
     console.log({ workspaceFolders });
     const filePath = workspaceFolders
         ? vscode.Uri.joinPath(workspaceFolders[0].uri, "notebook-comments.json")
-              .fsPath
+            .fsPath
         : "";
     try {
         const uri = vscode.Uri.file(filePath);
@@ -172,7 +171,7 @@ export class CustomWebviewProvider {
             let uri: string = "";
             const workspaceFolders = vscode.workspace.workspaceFolders;
             const draftsFolderUri = workspaceFolders
-                ? vscode.Uri.joinPath(workspaceFolders[0].uri, "drafts")
+                ? vscode.Uri.joinPath(workspaceFolders[0].uri, "files")
                 : undefined;
             if (draftsFolderUri) {
                 const codexFiles = await vscode.workspace.findFiles(
@@ -286,7 +285,7 @@ export class CustomWebviewProvider {
                                 );
                             const commentThreadToMarkAsDeleted =
                                 existingCommentsThreads[
-                                    indexOfCommentToMarkAsDeleted
+                                indexOfCommentToMarkAsDeleted
                                 ];
                             await serializeCommentsToDisk(
                                 existingCommentsThreads,
@@ -312,7 +311,7 @@ export class CustomWebviewProvider {
                                 );
                             const commentThreadToMarkAsDeleted =
                                 existingCommentsThreads[
-                                    indexOfCommentToMarkAsDeleted
+                                indexOfCommentToMarkAsDeleted
                                 ];
                             const commentToMarkAsDeleted =
                                 existingCommentsThreads[
