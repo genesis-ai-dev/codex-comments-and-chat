@@ -512,6 +512,7 @@ function App() {
         flexDirection: 'column',
         height: '100vh',
         width: '100%',
+        padding: '0.5em',
         backgroundImage:
           'linear-gradient(45deg, var(--vscode-sideBar-background), transparent)',
         backgroundSize: 'cover',
