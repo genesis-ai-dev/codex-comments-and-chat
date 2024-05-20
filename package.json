@@ -1,10 +1,11 @@
 {
   "name": "codex-copilot",
   "description": "Codex Copilot for translation support. Includes chat, comments, and inline AI text completions.",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "publisher": "project-accelerate",
   "private": true,
   "license": "MIT",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/genesis-ai-dev/codex-comments-and-chat"
@@ -424,9 +425,13 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "lint": "eslint \"src/**/*.ts\"",
-    "watch": "tsc -w -p ./"
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "lint": "eslint src --ext ts",
+    "pretest": "npm run compile && npm run lint",
+    "test": "node ./out/test/runTest.js",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@types/node": "^20.11.25",
@@ -435,13 +440,16 @@
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "eslint": "^8.32.0",
-    "typescript": "^5.3.2"
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.2",
+    "webpack-cli": "^5.1.4"
   },
   "dependencies": {
     "@vscode/codicons": "^0.0.35",
     "@vscode/test-electron": "^2.3.10",
     "codex-types": "^0.0.2",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "webpack": "^5.89.0"
   },
   "extensionDependencies": [
     "project-accelerate.shared-state-store",
