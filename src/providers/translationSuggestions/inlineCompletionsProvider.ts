@@ -15,7 +15,7 @@ export async function provideInlineCompletionItems(
     context: vscode.InlineCompletionContext,
     token: vscode.CancellationToken
 ): Promise<vscode.InlineCompletionItem[] | undefined> {
-    vscode.window.showInformationMessage("provideInlineCompletionItems called");
+    // vscode.window.showInformationMessage("provideInlineCompletionItems called");
     if (!shouldProvideCompletion) {
         return undefined;
     }
@@ -173,7 +173,7 @@ async function getCompletionTextGPT(
     document: vscode.TextDocument,
     position: vscode.Position
 ) {
-    vscode.window.showInformationMessage("getCompletionTextGPT called");
+    // vscode.window.showInformationMessage("getCompletionTextGPT called");
     let textBeforeCursor = document.getText(
         new vscode.Range(new vscode.Position(0, 0), position)
     );
