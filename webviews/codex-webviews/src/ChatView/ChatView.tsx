@@ -457,7 +457,6 @@ function App() {
         {availableMessageThreads && availableMessageThreads?.length > 0 && (
           <VSCodeDropdown
             value={currentMessageThreadId}
-            style={{ maxWidth: 200 }}
             // disabled={!selectedBook}
             onInput={(e: any) => {
               console.log({ e });
@@ -512,7 +511,6 @@ function App() {
         flexDirection: 'column',
         height: '100vh',
         width: '100%',
-        padding: '0.5em',
         backgroundImage:
           'linear-gradient(45deg, var(--vscode-sideBar-background), transparent)',
         backgroundSize: 'cover',
@@ -525,7 +523,8 @@ function App() {
         <div
           style={{
             display: 'flex',
-            gap: 10,
+            gap: 3,
+            width: '95%',
           }}
         >
           <NavigateChatHistoryButton
