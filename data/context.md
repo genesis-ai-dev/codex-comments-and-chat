@@ -1,69 +1,58 @@
-# JSON File Structure for Chat
+# JSON Data Structure
 
-## Overview
+This document provides an overview of the JSON data structure used for storing notes and questions related to verses from various books.
 
-This JSON file is generated from Unfolding Word resources and is designed for use within the Chat to give it context.
+## JSON Structure
 
-## JSON File Structure
+The JSON data consists of two main parts:
+1. `verses`: A dictionary containing notes and questions for each verse.
+2. `references`: A dictionary containing reference content.
 
-The structure of the JSON file is as follows:
+### `verses`
+
+The `verses` dictionary is organized by book names, with each book containing verses. Each verse has two lists: `notes` and `questions`.
+
+- **Book Name**: The key for each book.
+  - **Verse**: The key for each verse within a book.
+    - **notes**: A list of note objects.
+      - **note**: The note content.
+      - **ref_id**: The ID of the reference associated with the note.
+    - **questions**: A list of question objects.
+      - **question**: The question content.
+      - **response**: The response to the question.
+
+Example:
 ```json
-{
-    "BOOK_NAME": {
-        "VERSE": {
-            "notes": [
-                {
-                    "note": "NOTE_TEXT",
-                    "ref": "REFERENCE_TEXT"
-                },
-                ...
-            ],
-            "questions": [
-                {
-                    "question": "QUESTION_TEXT",
-                    "response": "RESPONSE_TEXT"
-                },
-                ...
-            ]
-        },
-        ...
-    },
-    ...
+"JUD": {
+    "1:1": {
+        "notes": [
+            {
+                "note": "This is a sample note.",
+                "ref_id": 1
+            }
+        ],
+        "questions": [
+            {
+                "question": "What is the meaning of this verse?",
+                "response": "This verse means..."
+            }
+        ]
+    }
 }
 ```
-### Sections
+### `references`
 
-#### Verses
+The `references` dictionary stores the actual content of the references, indexed by a unique ID.
 
-- **BOOK_NAME**: The name of the book (e.g., "JUD" for Jude).
-- **VERSE**: The verse reference (e.g., "1:1").
-  - **notes**: A list of notes for the specified verse.
-    - **note**: The note text.
-    - **ref**: The reference text associated with the note.
-  - **questions**: A list of questions for the specified verse.
-    - **question**: The question text.
-    - **response**: The response text associated with the question.
+- **ID**: The unique identifier for each reference.
+  - **content**: The content of the reference.
 
-## Example
-
-Here is an example of the JSON file content:
+Example:
 ```json
-{
-    "JUD": {
-        "1:1": {
-            "notes": [
-                {
-                    "note": "Note text for Jude 1:1",
-                    "ref": "Reference text for Jude 1:1"
-                }
-            ],
-            "questions": [
-                {
-                    "question": "What is the question for Jude 1:1?",
-                    "response": "The response to the question for Jude 1:1."
-                }
-            ]
-        }
+"references": {
+    "1": {
+        "id": 1,
+        "content": "This is the content of the reference."
     }
 }
 ```
