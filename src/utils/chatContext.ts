@@ -34,9 +34,12 @@ interface ChatContext {
 }
 class VerseDataReader {
     private data: ChatContext = { verses: {}, references: {} };
+    private path: string = "no";
 
-    constructor(private extensionContext: vscode.ExtensionContext) {}
-
+    constructor(private extensionContext: vscode.ExtensionContext) {
+        this.loadJSON(this.extensionContext.extensionPath + "/src/utils" + "/chat_context.json");
+        this.path = this.extensionContext.extensionPath + "/src/utils" + "/chat_context.json";
+    }   
     public async loadJSON(filePath: string): Promise<void> {
         const fileUri = vscode.Uri.file(this.extensionContext.asAbsolutePath(filePath));
         const fileContents = await vscode.workspace.fs.readFile(fileUri);
@@ -45,7 +48,7 @@ class VerseDataReader {
 
     public getVerseData(book: string, verse: string): string {
         if (!this.data.verses[book] || !this.data.verses[book][verse]) {
-            return `No data found for ${book} ${verse}`;
+            return this.path;
         }
 
         const verseData = this.data.verses[book][verse];
