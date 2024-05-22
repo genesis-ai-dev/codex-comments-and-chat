@@ -11,6 +11,7 @@ import {
   getChatMessagesFromFile,
   writeSerializedData,
 } from "../../utils/fileUtils";
+import { VerseDataReader } from "../../utils/chatContext";
 
 const config = vscode.workspace.getConfiguration("translators-copilot");
 const endpoint = config.get("llmEndpoint"); // NOTE: config.endpoint is reserved so we must have unique name
@@ -19,6 +20,7 @@ const model = config.get("model");
 const maxTokens = config.get("max_tokens");
 const temperature = config.get("temperature");
 const maxLength = 2048;
+let VerseReader: VerseDataReader | null = null;
 let abortController: AbortController | null = null;
 
 const sendChatThreadToWebview = async (webviewView: vscode.WebviewView) => {
@@ -235,13 +237,23 @@ export class CustomWebviewProvider {
     if (selection.length > maxLength - 100) {
       selectedTextToSend = selection.substring(0, maxLength - 100);
     }
-
+    let verseNotes = null;
+    if (vrefAtStartOfLine) {
+      const [book, verse] = vrefAtStartOfLine.split(" ");
+      if (VerseReader) {
+        verseNotes = VerseReader.getVerseData(book, verse);
+      } else {
+        console.error("VerseReader is not available");
+      }
+    }
+    
     webviewView.webview.postMessage({
       command: "select",
       textDataWithContext: {
         selectedText: selectedTextToSend,
         completeLineContent,
         vrefAtStartOfLine,
+        verseNotes,
       },
     });
   }
@@ -258,6 +270,7 @@ export class CustomWebviewProvider {
               completeLineContent: null,
               vrefAtStartOfLine: null,
               selectedText: "placeHolder test",
+              verseNotes: null,
             };
 
             const selectedText = activeEditor.document.getText(e.selections[0]);
@@ -451,6 +464,7 @@ export function registerChatProvider(context: vscode.ExtensionContext) {
   const item = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Right
   );
+  VerseReader = new VerseDataReader(context);
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       "genesis-translator-sidebar",

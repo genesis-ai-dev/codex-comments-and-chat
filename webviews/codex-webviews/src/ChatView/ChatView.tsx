@@ -186,6 +186,7 @@ function App() {
     useState<ChatMessageWithContext>();
   const [selectedTextContext, setSelectedTextContext] = useState<string>('');
   const [currentlyActiveVref, setCurrentlyActiveVref] = useState<string>('');
+  const [currentVerseNotes, setCurrentVerseNotes] = useState<string>('');
   const [contextItems, setContextItems] = useState<string[]>([]); // TODO: fetch from RAG server
   const [messageLog, setMessageLog] = useState<ChatMessageWithContext[]>([
     // systemMessage,
@@ -257,6 +258,7 @@ function App() {
         selectedText: selectedTextContext,
         currentVref: currentlyActiveVref,
         relevantContextItemsFromEmbeddings: contextItemsFromState,
+        verseNotes: currentVerseNotes
       },
     };
     const updatedMessageLog = [...messageLog, pendingMessage];
@@ -340,7 +342,7 @@ function App() {
           // FIXME: this is being invoked every time a new token is rendered
           if (message.textDataWithContext) {
             console.log('Received a select command', message);
-            const { completeLineContent, selectedText, vrefAtStartOfLine } =
+            const { completeLineContent, selectedText, vrefAtStartOfLine, verseNotes } =
               message.textDataWithContext;
 
             const strippedCompleteLineContent = vrefAtStartOfLine
@@ -351,7 +353,9 @@ function App() {
               selectedText !== ''
                 ? `${selectedText} (${vrefAtStartOfLine})`
                 : `${strippedCompleteLineContent} (${vrefAtStartOfLine})`;
-
+            if (verseNotes !== null) {
+              setCurrentVerseNotes(verseNotes);
+            }
             setSelectedTextContext(selectedTextContextString);
             setCurrentlyActiveVref(vrefAtStartOfLine ?? '');
           }

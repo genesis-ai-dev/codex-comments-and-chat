@@ -70,6 +70,7 @@ interface SelectedTextDataWithContext {
   completeLineContent: string | null;
   vrefAtStartOfLine: string | null;
   selectedText: string | null;
+  verseNotes: string | null;
 }
 
 type ChatPostMessages =
