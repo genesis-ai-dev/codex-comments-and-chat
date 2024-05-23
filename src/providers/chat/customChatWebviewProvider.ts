@@ -246,16 +246,18 @@ export class CustomWebviewProvider {
         console.error("VerseReader is not available");
       }
     }
-    
-    webviewView.webview.postMessage({
+
+    const message = {
       command: "select",
       textDataWithContext: {
-        selectedText: selectedTextToSend + verseNotes, // FIXME, this should be passed below
+        selectedText: selectedTextToSend, // FIXME, this should be passed below
         completeLineContent,
         vrefAtStartOfLine,
         verseNotes, // This should work, but doesn't, to pass the data to the webview.
       },
-    });
+    };
+    console.log('in customChatWebviewProvider', message);
+    webviewView.webview.postMessage(message);
   }
 
   saveSelectionChanges(webviewView: vscode.WebviewView) {
@@ -273,7 +275,7 @@ export class CustomWebviewProvider {
               verseNotes: null,
             };
 
-            const selectedText = activeEditor.document.getText(e.selections[0]);
+            // const selectedText = activeEditor.document.getText(e.selections[0]);
 
             const currentLine = activeEditor.document.lineAt(
               e.selections[0].active
@@ -445,6 +447,32 @@ export class CustomWebviewProvider {
                 "workbench.action.openSettings",
                 "@ext:project-accelerate.codex-copilot"
               );
+              break;
+            }
+            case 'openContextItem': {
+              console.log('openContextItem', message);
+              const vrefRegex = /[a-zA-Z]+\s+\d+:\d+/;
+              const vref = message.text.match(vrefRegex)?.[0];
+              if (vref) {
+                try {
+                  if (message.text.startsWith('Notes for')) {
+                    await vscode.commands.executeCommand(
+                      "codex-editor-extension.showReferences",
+                      vref
+                    );
+                  } else if (message.text.startsWith('Questions for')) {
+                    await vscode.commands.executeCommand(
+                      "codex-editor-extension.showReferences",
+                      vref
+                    ); // FIXME: This should be a different command. Currently the both open the TranslationNotes.
+                    // There is no command in the codex-editor-extension to open the Questions.
+                  }
+                } catch (error) {
+                  console.error('Failed to execute command:', error);
+                }
+              } else {
+                console.error('Vref not found in message text');
+              }
               break;
             }
             default:

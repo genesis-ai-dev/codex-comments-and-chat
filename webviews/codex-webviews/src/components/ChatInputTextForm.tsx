@@ -10,12 +10,14 @@ type CommentTextFormProps = {
   handleSubmit: (comment: string) => void;
   contextItems: string[];
   selectedText: string;
+  vscode: any;
 };
 
 export const ChatInputTextForm: React.FC<CommentTextFormProps> = ({
   handleSubmit,
   contextItems,
   selectedText,
+  vscode,
 }) => {
   return (
     <form
@@ -48,7 +50,7 @@ export const ChatInputTextForm: React.FC<CommentTextFormProps> = ({
           width: '100%',
         }}
       >
-        <ContextItemList contextItems={contextItems} />
+        <ContextItemList contextItems={contextItems} vscode={vscode} />
         {selectedText && (
           <div
             style={{

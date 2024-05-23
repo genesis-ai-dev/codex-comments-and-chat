@@ -17,7 +17,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { ChatRoleLabel } from '../common';
 
-const FLASK_ENDPOINT = 'http://localhost:5554';
+// const FLASK_ENDPOINT = 'http://localhost:5554';
 
 const vscode = acquireVsCodeApi();
 
@@ -84,7 +84,7 @@ function App() {
     useState<ChatMessageWithContext>();
   const [selectedTextContext, setSelectedTextContext] = useState<string>('');
   const [currentlyActiveVref, setCurrentlyActiveVref] = useState<string>('');
-  const [currentVerseNotes, setCurrentVerseNotes] = useState<string>('');
+  // const [currentVerseNotes, setCurrentVerseNotes] = useState<string>('');
   const [contextItems, setContextItems] = useState<string[]>([]); // TODO: fetch from RAG server
   const [messageLog, setMessageLog] = useState<ChatMessageWithContext[]>([
     // systemMessage,
@@ -102,38 +102,41 @@ function App() {
   const SHOW_SENDER_ROLE_LABELS = false;
 
   async function fetchContextItems(query: string): Promise<string[]> {
-    try {
-      // FIXME: finish implementing this function.
-      // The Flask server is either crashing or not starting sometimes
-      // and we need a more graceful way to handle using context items.
+    // try {
+    //   // FIXME: finish implementing this function.
+    //   // The Flask server is either crashing or not starting sometimes
+    //   // and we need a more graceful way to handle using context items.
 
-      // Also, need to truncate retrieved items to reasonable length based on count
-      // and length of the items.
-      const response = await fetch(
-        `${FLASK_ENDPOINT}/search?db_name=.codex&query=${encodeURIComponent(
-          query,
-        )}`,
-      );
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
-      }
-      const data = await response.json();
-      if (!Array.isArray(data) || data.length === 0) {
-        return [];
-      }
-      return data.map(
-        (item) => `${item.book} ${item.chapter}:${item.verse} - ${item.text}`,
-      );
-    } catch (error) {
-      console.error('Failed to fetch context items due to an error:', error);
-      vscode.postMessage({
-        command: 'notifyUserError',
-        message: `Failed to fetch context items due to an error: ${
-          (error as Error).message
-        }`,
-      } as ChatPostMessages);
-      return [];
-    }
+    //   // Also, need to truncate retrieved items to reasonable length based on count
+    //   // and length of the items.
+    //   const response = await fetch(
+    //     `${FLASK_ENDPOINT}/search?db_name=.codex&query=${encodeURIComponent(
+    //       query,
+    //     )}`,
+    //   );
+    //   if (!response.ok) {
+    //     throw new Error(`Server error: ${response.status}`);
+    //   }
+    //   const data = await response.json();
+    //   if (!Array.isArray(data) || data.length === 0) {
+    //     return [];
+    //   }
+    //   return data.map(
+    //     (item) => `${item.book} ${item.chapter}:${item.verse} - ${item.text}`,
+    //   );
+    // } catch (error) {
+    //   console.error('Failed to fetch context items due to an error:', error);
+    //   vscode.postMessage({
+    //     command: 'notifyUserError',
+    //     message: `Failed to fetch context items due to an error: ${
+    //       (error as Error).message
+    //     }`,
+    //   } as ChatPostMessages);
+    //   return [];
+    // }
+    console.log('fetchContextItems', query); // FIXME: remove this - just for using the argument
+    // return currentVerseNotes ? [currentVerseNotes] : [];
+    return [];
   }
 
   function formatMessageLogToString(
@@ -156,7 +159,7 @@ function App() {
         selectedText: selectedTextContext,
         currentVref: currentlyActiveVref,
         relevantContextItemsFromEmbeddings: contextItemsFromState,
-        verseNotes: currentVerseNotes,
+        // verseNotes: currentVerseNotes,
       },
     };
     const updatedMessageLog = [...messageLog, pendingMessage];
@@ -239,9 +242,13 @@ function App() {
         case 'select':
           // FIXME: this is being invoked every time a new token is rendered
           if (message.textDataWithContext) {
-            console.log('Received a select command', message);
-            const { completeLineContent, selectedText, vrefAtStartOfLine, verseNotes } =
-              message.textDataWithContext;
+            console.log('Received a select command in ChatView', message);
+            const {
+              completeLineContent,
+              selectedText,
+              vrefAtStartOfLine,
+              verseNotes,
+            } = message.textDataWithContext;
 
             const strippedCompleteLineContent = vrefAtStartOfLine
               ? completeLineContent?.replace(vrefAtStartOfLine, '').trim()
@@ -252,7 +259,13 @@ function App() {
                 ? `${selectedText} (${vrefAtStartOfLine})`
                 : `${strippedCompleteLineContent} (${vrefAtStartOfLine})`;
             // if (verseNotes !== null) {
-            setCurrentVerseNotes(verseNotes ?? '');
+            // setCurrentVerseNotes(verseNotes ?? '');
+            setContextItems(
+              verseNotes?.split('\n\n').filter(
+                // Let's filter out empty notes and notes that are URIs to .json files
+                (note) => note !== '' && !/^[^\n]*\.json$/.test(note), // FIXME: we should simply avoid passing in the URI to the .json file in the first place
+              ) ?? [],
+            );
             // }
             setSelectedTextContext(selectedTextContextString);
             setCurrentlyActiveVref(vrefAtStartOfLine ?? '');
@@ -480,6 +493,7 @@ function App() {
         contextItems={contextItems}
         selectedText={selectedTextContext}
         handleSubmit={handleSubmit}
+        vscode={vscode}
       />
     </main>
   );
