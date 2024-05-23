@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import {
-  VSCodeTag,
   VSCodeButton,
   VSCodeDropdown,
   VSCodeOption,
@@ -8,6 +7,7 @@ import {
 import { ChatInputTextForm } from '../components/ChatInputTextForm';
 import DeleteButtonWithConfirmation from '../components/DeleteButtonWithConfirmation';
 import { WebviewHeader } from '../components/WebviewHeader';
+import { MessageItem } from '../components/MessageItem';
 import '../App.css';
 import {
   ChatMessageThread,
@@ -15,16 +15,11 @@ import {
   ChatPostMessages,
 } from '../../../../types';
 import { v4 as uuidv4 } from 'uuid';
+import { ChatRoleLabel } from '../common';
 
 const FLASK_ENDPOINT = 'http://localhost:5554';
 
 const vscode = acquireVsCodeApi();
-
-const ChatRoleLabel = {
-  system: 'System',
-  user: 'You',
-  assistant: 'Copilot',
-};
 
 function messageWithContext({
   messageHistory,
@@ -66,103 +61,6 @@ function messageWithContext({
     createdAt: new Date().toISOString(),
   };
 }
-
-interface MessageItemProps {
-  messageItem: ChatMessageWithContext;
-  showSenderRoleLabels?: boolean;
-}
-
-const MessageItem: React.FC<MessageItemProps> = ({
-  messageItem,
-  showSenderRoleLabels = false,
-}) => {
-  return (
-    <div
-      style={{
-        display: messageItem.role === 'system' ? 'none' : 'flex',
-        flexDirection: 'column',
-        gap: '0.5em',
-        justifyContent:
-          messageItem.role === 'user'
-            ? 'flex-start'
-            : messageItem.role === 'assistant'
-            ? 'flex-end'
-            : 'center',
-        padding: '0.5em 1em',
-        // maxWidth: messageItem.role === "context" ? "100%" : "80%", // full width for 'context' messages
-        alignSelf:
-          messageItem.role === 'assistant'
-            ? 'flex-start'
-            : messageItem.role === 'user'
-            ? 'flex-end'
-            : 'center',
-      }}
-    >
-      {(messageItem.role === 'user' || messageItem.role === 'assistant') && (
-        <div
-          style={{
-            fontSize: '0.7em',
-            color: 'lightgrey',
-            marginBottom: '0.2em',
-            marginLeft: messageItem.role === 'assistant' ? '9px' : '0px',
-            marginRight: messageItem.role === 'user' ? '9px' : '0px',
-            alignSelf:
-              messageItem.role === 'assistant' ? 'flex-start' : 'flex-end',
-          }}
-        >
-          {new Date(messageItem.createdAt).toLocaleTimeString()}{' '}
-          {/* FIXME: add actual timestamps */}
-        </div>
-      )}
-      <div
-        style={{
-          display: messageItem.role === 'system' ? 'none' : 'flex',
-          flexDirection:
-            messageItem.role === 'assistant'
-              ? 'row'
-              : messageItem.role === 'user'
-              ? 'row-reverse'
-              : 'column',
-          gap: '0.5em',
-          justifyContent:
-            messageItem.role === 'assistant'
-              ? 'flex-start'
-              : messageItem.role === 'user'
-              ? 'flex-end'
-              : 'center',
-          borderRadius: '20px',
-          backgroundColor:
-            messageItem.role === 'assistant'
-              ? 'var(--vscode-editor-background)'
-              : messageItem.role === 'user'
-              ? 'var(--vscode-button-background)'
-              : 'lightblue', // distinct style for 'context' messages
-          color:
-            messageItem.role === 'assistant'
-              ? 'var(--vscode-editor-foreground)'
-              : messageItem.role === 'user'
-              ? 'var(--vscode-button-foreground)'
-              : 'black', // distinct style for 'context' messages
-          padding: '0.5em 1em',
-          // maxWidth: messageItem.role === "context" ? "100%" : "80%", // full width for 'context' messages
-          alignSelf:
-            messageItem.role === 'assistant'
-              ? 'flex-start'
-              : messageItem.role === 'user'
-              ? 'flex-end'
-              : 'center',
-        }}
-      >
-        {showSenderRoleLabels && (
-          <VSCodeTag>
-            {ChatRoleLabel[messageItem.role as keyof typeof ChatRoleLabel]}
-          </VSCodeTag>
-        )}
-        <div style={{ display: 'flex' }}>{messageItem.content}</div>
-      </div>
-    </div>
-  );
-};
 
 function App() {
   // const systemMessage: ChatMessageWithContext = {
@@ -258,7 +156,7 @@ function App() {
         selectedText: selectedTextContext,
         currentVref: currentlyActiveVref,
         relevantContextItemsFromEmbeddings: contextItemsFromState,
-        verseNotes: currentVerseNotes
+        verseNotes: currentVerseNotes,
       },
     };
     const updatedMessageLog = [...messageLog, pendingMessage];
@@ -353,9 +251,9 @@ function App() {
               selectedText !== ''
                 ? `${selectedText} (${vrefAtStartOfLine})`
                 : `${strippedCompleteLineContent} (${vrefAtStartOfLine})`;
-            if (verseNotes !== null) {
-              setCurrentVerseNotes(verseNotes);
-            }
+            // if (verseNotes !== null) {
+            setCurrentVerseNotes(verseNotes ?? '');
+            // }
             setSelectedTextContext(selectedTextContextString);
             setCurrentlyActiveVref(vrefAtStartOfLine ?? '');
           }
@@ -428,7 +326,7 @@ function App() {
 
   function clearChat() {
     setCurrentMessageThreadId(uuidv4());
-    setMessageLog([systemMessage]);
+    setMessageLog([]);
   }
 
   interface ClearChatButtonProps {

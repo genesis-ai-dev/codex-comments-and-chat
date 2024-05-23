@@ -1,7 +1,7 @@
 {
   "name": "codex-copilot",
   "description": "Codex Copilot for translation support. Includes chat, comments, and inline AI text completions.",
-  "version": "0.0.15",
+  "version": "0.0.17",
   "publisher": "project-accelerate",
   "private": true,
   "license": "MIT",
@@ -31,10 +31,6 @@
           "translators-copilot.llmEndpoint": {
             "title": "LLM Endpoint",
             "type": "string",
-            "enum": [
-              "http://localhost:1234/v1",
-              "https://api.openai.com/v1"
-            ],
             "default": "https://api.openai.com/v1",
             "description": "The endpoint for the completion API. Choose between local LLM or OpenAI endpoints. We would suggest using LM Studio (https://lmstudio.ai) for a local LLM."
           },
