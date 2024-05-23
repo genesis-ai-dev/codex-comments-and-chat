@@ -250,10 +250,10 @@ export class CustomWebviewProvider {
     webviewView.webview.postMessage({
       command: "select",
       textDataWithContext: {
-        selectedText: selectedTextToSend,
+        selectedText: selectedTextToSend + verseNotes, // FIXME, this should be passed below
         completeLineContent,
         vrefAtStartOfLine,
-        verseNotes,
+        verseNotes, // This should work, but doesn't, to pass the data to the webview.
       },
     });
   }
