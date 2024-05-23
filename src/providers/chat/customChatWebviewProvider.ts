@@ -240,7 +240,6 @@ export class CustomWebviewProvider {
     let verseNotes = null;
     if (vrefAtStartOfLine) {
       const [book, verse] = vrefAtStartOfLine.split(" ");
-      console.error(`Book: ${book} and ${verse}`);
       if (VerseReader) {
         verseNotes = VerseReader.getVerseData(book, verse);
       } else {

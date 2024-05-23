@@ -32,22 +32,35 @@ interface ChatContext {
     verses: Verses;
     references: References;
 }
+
 class VerseDataReader {
     private data: ChatContext = { verses: {}, references: {} };
     private path: string = "no";
 
     constructor(private extensionContext: vscode.ExtensionContext) {
-        this.loadJSON(this.extensionContext.extensionPath + "/src/utils" + "/chat_context.json");
-        this.path = this.extensionContext.extensionPath + "/src/utils" + "/chat_context.json";
-    }   
+        const filePath = vscode.Uri.joinPath(this.extensionContext.extensionUri, "src/utils/chat_context.json").fsPath;
+        this.loadJSON(filePath)
+            .then(() => console.log("JSON loaded successfully"))
+            .catch(error => console.error("Error loading JSON:", error));
+        this.path = filePath;
+    }
+
     public async loadJSON(filePath: string): Promise<void> {
-        const fileUri = vscode.Uri.file(this.extensionContext.asAbsolutePath(filePath));
-        const fileContents = await vscode.workspace.fs.readFile(fileUri);
-        this.data = JSON.parse(new TextDecoder().decode(fileContents));
+        try {
+            const fileUri = vscode.Uri.file(filePath);
+            const fileContents = await vscode.workspace.fs.readFile(fileUri);
+            this.data = JSON.parse(new TextDecoder().decode(fileContents));
+            console.log("Loaded data:", this.data); // Log the loaded data
+        } catch (error) {
+            console.error("Error reading JSON file:", error);
+        }
     }
 
     public getVerseData(book: string, verse: string): string {
+        console.log(`Requested book: ${book}, verse: ${verse}`); // Log the requested book and verse
+
         if (!this.data.verses[book] || !this.data.verses[book][verse]) {
+            console.error(`Data not found for book: ${book}, verse: ${verse}`);
             return this.path;
         }
 
