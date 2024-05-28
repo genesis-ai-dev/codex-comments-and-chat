@@ -12,6 +12,7 @@
 !src/assets/vscode.css
 !**/*.svg
 !node_modules/@vscode/codicons/dist/**
+!src/utils/*.json
 
 !CHANGELOG.md
 !LICENSE.md
