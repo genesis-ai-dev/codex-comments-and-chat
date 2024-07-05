@@ -142,15 +142,15 @@ export async function fetchCompletionConfig(): Promise<CompletionConfig> {
             endpoint: config.get("defaultsRecommended.llmEndpoint") || "https://api.openai.com/v1",
             apiKey: config.get("api_key") || "",
             model: config.get("defaultsRecommended.model") || "gpt-4o",
-            contextSize: config.get("general.contextSize") || "large",
-            additionalResourceDirectory: config.get("general.additionalResourcesDirectory") || "",
+            contextSize: config.get("contextSize") || "large",
+            additionalResourceDirectory: config.get("additionalResourcesDirectory") || "",
             contextOmission: config.get("defaultsRecommended.experimentalContextOmission") || false,
             sourceBookWhitelist: config.get("defaultsRecommended.sourceBookWhitelist") || "",
             maxTokens: config.get("max_tokens") || 2048,
             temperature: config.get("temperature") || 0.8,
             mainChatLanguage: config.get("main_chat_language") || "English",
             chatSystemMessage: config.get("chatSystemMessage") || "This is a chat between a helpful Bible translation assistant and a Bible translator...",
-            debugMode: config.get("general.debugMode") || false
+            debugMode: config.get("debugMode") || false
         };
     } catch (error) {
         console.error("Error getting completion configuration", error);

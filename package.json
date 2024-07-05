@@ -111,9 +111,9 @@
             "title": "Rules for AI (System Message)",
             "type": "string",
             "default": "This is a chat between a helpful Bible translation assistant and a Bible translator. The assistant will provide helpful answers and suggestions to the translator, often relying on the translator's current project and reference resources. The translator will ask questions and provide context to the assistant. The translator's aim is to be consistent and faithful in a fairly literalistic rendering of the source text.",
-            "description": "The system message controlling the behavior of the chat system. You can customize this message to fit your needs, or ask the copilot to translate it for you into your preferred interface language."
+            "description": "The system message controlling the behavior of the chat system (not inline completion). You can customize this message to fit your needs, or ask the copilot to translate it for you into your preferred interface language."
           },
-          "translators-copilot.general.sourceTextSelectionMode": {
+          "translators-copilot.sourceTextSelectionMode": {
             "type": "string",
             "default": "auto",
             "description": "The method of selecting the source text. If set to manual, use 'ctrl + s, ctrl + b' to change the source text.",
@@ -122,7 +122,7 @@
               "manual"
             ]
           },
-          "translators-copilot.general.contextSize": {
+          "translators-copilot.contextSize": {
             "type": "string",
             "default": "large",
             "description": "The size of the context to be used for completion.",
@@ -132,7 +132,7 @@
               "large"
             ]
           },
-          "translators-copilot.general.additionalResourcesDirectory": {
+          "translators-copilot.additionalResourcesDirectory": {
             "type": "string",
             "default": "",
             "description": "The directory path containing additional resources for completion context. Will read all files in directory and put them in the context. No recources if path is invalid."
@@ -166,7 +166,7 @@
             "default": "false",
             "description": "Will omit reference to the Bible in the API request. This removes scripture biase."
           },
-          "translators-copilot.general.debugMode": {
+          "translators-copilot.debugMode": {
             "title": "Debugging Mode",
             "type": "boolean",
             "default": "false",
