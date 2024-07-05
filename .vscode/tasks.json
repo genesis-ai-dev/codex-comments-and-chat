@@ -6,7 +6,9 @@
     {
       "type": "npm",
       "script": "watch",
-      "problemMatcher": ["$vite"],
+      "problemMatcher": [
+        "$vite"
+      ],
       "isBackground": true,
       "presentation": {
         "reveal": "never"
@@ -15,6 +17,15 @@
         "kind": "build",
         "isDefault": true
       }
+    },
+    {
+      "type": "npm",
+      "script": "build:all",
+      "path": "webviews/codex-webviews",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "npm: build:all - webviews/codex-webviews",
+      "detail": "npm run build:ChatView && npm run build:CommentsView"
     }
   ]
 }

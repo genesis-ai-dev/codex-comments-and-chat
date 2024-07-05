@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build:ChatView": "APP_NAME=ChatView vite build",
-    "build:CommentsView": "APP_NAME=CommentsView vite build",
+    "build:ChatView": "cross-env APP_NAME=ChatView vite build",
+    "build:CommentsView": "cross-env APP_NAME=CommentsView vite build",
     "build:all": "npm run build:ChatView && npm run build:CommentsView",
-    "watch": "nodemon --watch src --ext ts,tsx --exec npm run build:all",
+    "watch": "nodemon --watch src --ext ts,tsx --exec \"npm run build:all\" --signal SIGTERM",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
