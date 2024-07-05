@@ -28,31 +28,11 @@
       {
         "title": "Translators Copilot",
         "properties": {
-          "translators-copilot.llmEndpoint": {
-            "title": "LLM Endpoint",
-            "type": "string",
-            "default": "https://api.openai.com/v1",
-            "description": "The endpoint for the completion API. Choose between local LLM or OpenAI endpoints. We would suggest using LM Studio (https://lmstudio.ai) for a local LLM."
-          },
           "translators-copilot.api_key": {
             "title": "API Key",
             "type": "string",
             "default": "",
             "description": "Your own openai API key. Ignorable for local LLM."
-          },
-          "translators-copilot.model": {
-            "title": "LLM Model",
-            "type": "string",
-            "enum": [
-              "local",
-              "gpt-3.5-turbo",
-              "gpt-4",
-              "gpt-4-turbo",
-              "gpt-4o",
-              "davinci"
-            ],
-            "default": "gpt-4o",
-            "description": "Model name selected for inference. Ignorable for local LLM."
           },
           "translators-copilot.max_tokens": {
             "title": "Max Tokens",
@@ -63,7 +43,7 @@
           "translators-copilot.temperature": {
             "title": "Temperature",
             "type": "number",
-            "default": 0.2,
+            "default": 0.8,
             "description": "The randomness level of output generation. A higher value leads to more random outputs."
           },
           "translators-copilot.main_chat_language": {
@@ -132,6 +112,65 @@
             "type": "string",
             "default": "This is a chat between a helpful Bible translation assistant and a Bible translator. The assistant will provide helpful answers and suggestions to the translator, often relying on the translator's current project and reference resources. The translator will ask questions and provide context to the assistant. The translator's aim is to be consistent and faithful in a fairly literalistic rendering of the source text.",
             "description": "The system message controlling the behavior of the chat system. You can customize this message to fit your needs, or ask the copilot to translate it for you into your preferred interface language."
+          },
+          "translators-copilot.general.sourceTextSelectionMode": {
+            "type": "string",
+            "default": "auto",
+            "description": "The method of selecting the source text. If set to manual, use 'ctrl + s, ctrl + b' to change the source text.",
+            "enum": [
+              "auto",
+              "manual"
+            ]
+          },
+          "translators-copilot.general.contextSize": {
+            "type": "string",
+            "default": "large",
+            "description": "The size of the context to be used for completion.",
+            "enum": [
+              "small",
+              "medium",
+              "large"
+            ]
+          },
+          "translators-copilot.general.additionalResourcesDirectory": {
+            "type": "string",
+            "default": "",
+            "description": "The directory path containing additional resources for completion context. Will read all files in directory and put them in the context. No recources if path is invalid."
+          },
+          "translators-copilot.defaultsRecommended.llmEndpoint": {
+            "type": "string",
+            "default": "https://api.openai.com/v1",
+            "description": "The endpoint for the completion API. Currently only supports OpenAI API."
+          },
+          "translators-copilot.defaultsRecommended.model": {
+            "title": "LLM Model",
+            "type": "string",
+            "enum": [
+              "local",
+              "gpt-3.5-turbo",
+              "gpt-4",
+              "gpt-4-turbo",
+              "gpt-4o",
+              "davinci"
+            ],
+            "default": "gpt-4o",
+            "description": "Model name selected for inference. Ignorable for local LLM."
+          },
+          "translators-copilot.defaultsRecommended.sourceBookWhitelist": {
+            "type": "string",
+            "default": "",
+            "description": "Limits context building to specified books. Leave empty to include all. We recommend to leave empty for best results."
+          },
+          "translators-copilot.defaultsRecommended.experimentalContextOmission": {
+            "type": "boolean",
+            "default": "false",
+            "description": "Will omit reference to the Bible in the API request. This removes scripture biase."
+          },
+          "translators-copilot.general.debugMode": {
+            "title": "Debugging Mode",
+            "type": "boolean",
+            "default": "false",
+            "description": "If activated, inline completion LLM prompts will be saved to the `copilot-messages.log` file in the project."
           }
         }
       }
@@ -141,9 +180,9 @@
         {
           "type": "webview",
           "id": "genesis-translator-sidebar",
-          "name": "Genesis Translator",
+          "name": "Translator's Copilot",
           "icon": "$(comment-discussion)",
-          "contextualTitle": "Genesis Translator"
+          "contextualTitle": "Translator's Copilot"
         }
       ],
       "comments-sidebar-view": [
@@ -160,7 +199,7 @@
       "activitybar": [
         {
           "id": "genesis-translator-sidebar-view",
-          "title": "Genesis Translator Bar",
+          "title": "Translator's Copilot",
           "icon": "$(comment-discussion)"
         },
         {
@@ -352,6 +391,10 @@
       {
         "command": "translators-copilot.setLLMApiKey",
         "title": "Set LLM API Key"
+      },
+      {
+        "command": "extension.triggerInlineCompletion",
+        "title": "Auto Completion"
       }
     ],
     "menus": {
@@ -415,8 +458,27 @@
           "group": "inline@2",
           "when": "commentController == comment-project"
         }
+      ],
+      "editor/context": [
+        {
+          "command": "extension.triggerInlineCompletion",
+          "group": "z"
+        }
       ]
-    }
+    },
+    "keybindings": [
+      {
+        "command": "extension.triggerInlineCompletion",
+        "key": "alt+q",
+        "when": "editorTextFocus && !inputDisabled"
+      },
+      {
+        "command": "extension.manualSourceTextSelection",
+        "key": "ctrl+s ctrl+b",
+        "mac": "cmd+s cmd+b",
+        "when": "config.translators-copilot.sourceTextSelectionMode == 'manual'"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -440,8 +502,10 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "@types/axios": "^0.14.0",
     "@vscode/codicons": "^0.0.35",
     "@vscode/test-electron": "^2.3.10",
+    "axios": "^1.7.2",
     "codex-types": "^0.0.2",
     "path": "^0.12.7",
     "webpack": "^5.89.0"

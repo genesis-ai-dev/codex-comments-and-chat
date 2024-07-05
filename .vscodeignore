@@ -8,8 +8,6 @@
 !webviews/codex-webviews/dist/**
 
 !src/media/**
-!src/assets/reset.css
-!src/assets/vscode.css
 !**/*.svg
 !node_modules/@vscode/codicons/dist/**
 !src/utils/*.json
