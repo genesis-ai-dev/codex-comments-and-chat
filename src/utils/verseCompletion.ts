@@ -448,7 +448,7 @@ async function completeVerse(config: CompletionConfig, verseData: VerseData): Pr
             const messagesContent = messages.map(message => `${message.role}: ${message.content}`).join('\n\n');
 
             try {
-                await vscode.workspace.fs.writeFile(messagesFilePath, new TextEncoder().encode(messagesContent));
+                await vscode.workspace.fs.writeFile(messagesFilePath, new TextEncoder().encode(messagesContent + "\n\nAPI Response:\n" + response));
                 console.log('Messages written to copilot-messages.log');
 
                 // Show information message to the user
@@ -487,25 +487,15 @@ You are an expert biblical translator working on translating from ${verseData.so
             
 ## Guidelines
             
-1. Prioritize accuracy to the source text while maintaining natural expression in the target language.
-2. Maintain consistency with previously translated portions and the overall style of the project.
-3. Use provided similar translations and surrounding context for guidance, but don't simply copy them.
-4. Only complete the missing part of the verse; do not modify already translated portions.
-5. Do not add explanatory content or commentary.
-6. If crucial information is missing, provide the best possible translation based on available context.
-7. Preserve any formatting or verse numbering present in the partial translation.
+1. Only complete the missing part of the verse; do not modify already translated portions.
+2. Do not add explanatory content or commentary.
+3. If crucial information is missing, provide the best possible translation based on available context.
 
 Use the data provided by the user to understand how the target language relates to ${verseData.sourceLanguageName}, then translate the 'Verse to Complete'.`
         },
         {
             role: "user",
             content: `# Translation Task
-            
-## Verse to Complete
-
-Reference: ${verseData.verseRef}
-Source: ${verseData.sourceVerse}
-Partial Translation: ${verseData.currentVerse}
             
 ## Reference Data
             
@@ -526,10 +516,16 @@ ${verseData.otherResources}
 ` : ''}
 ## Instructions
             
-1. Analyze the provided reference data to understand the translation patterns and style.
-2. Complete the partial translation of the verse.
-3. Ensure your translation fits seamlessly with the existing partial translation.
-4. Provide only the completed translation without any additional commentary or quotation marks.
+1. Complete the partial translation of the verse.
+2. Ensure your translation fits seamlessly with the existing partial translation.
+
+## Verse to Complete
+
+Reference: ${verseData.verseRef}
+Source: ${verseData.sourceVerse}
+Partial Translation: 
+
+"${verseData.currentVerse}
 `
         }
     ];
