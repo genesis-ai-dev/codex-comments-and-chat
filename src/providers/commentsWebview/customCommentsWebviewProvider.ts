@@ -23,10 +23,10 @@ const loadWebviewHtml = (
   };
 
   const styleResetUri = webviewView.webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "src", "assets", "reset.css")
+    vscode.Uri.joinPath(extensionUri, "src", "media", "reset.css")
   );
   const styleVSCodeUri = webviewView.webview.asWebviewUri(
-    vscode.Uri.joinPath(extensionUri, "src", "assets", "vscode.css")
+    vscode.Uri.joinPath(extensionUri, "src", "media", "vscode.css")
   );
 
   const scriptUri = webviewView.webview.asWebviewUri(
@@ -76,8 +76,7 @@ const loadWebviewHtml = (
       Use a content security policy to only allow loading images from https or from our extension directory,
       and only allow scripts that have a specific nonce.
     -->
-    <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${
-      webviewView.webview.cspSource
+    <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webviewView.webview.cspSource
     }; script-src 'nonce-${nonce}';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="${styleResetUri}" rel="stylesheet">
