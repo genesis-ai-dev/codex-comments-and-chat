@@ -502,7 +502,7 @@ You are an expert biblical translator working on translating from ${verseData.so
 2. Do not add explanatory content or commentary.
 3. If crucial information is missing, provide the best possible translation based on available context.
 
-Use the data provided by the user to understand how the target language relates to ${verseData.sourceLanguageName}, then translate the 'Verse to Complete'.`
+Use the data provided by the user to understand how the target language relates to ${verseData.sourceLanguageName}, then translate the Partial Translation.`
         },
         {
             role: "user",
@@ -535,7 +535,6 @@ ${verseData.otherResources}
 Reference: ${verseData.verseRef}
 Source: ${verseData.sourceVerse}
 Partial Translation: 
-
 "${verseData.currentVerse}
 `
         }
