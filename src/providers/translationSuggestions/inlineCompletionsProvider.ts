@@ -13,8 +13,8 @@ let isAutocompletingInProgress = false;
 let autocompleteCancellationTokenSource: vscode.CancellationTokenSource | undefined;
 let currentSourceText = "";
 
-export const MAX_TOKENS = 4000;
-export const TEMPERATURE = 0.8;
+const MAX_TOKENS = 4000;
+const TEMPERATURE = 0.8;
 const sharedStateExtension = vscode.extensions.getExtension("project-accelerate.shared-state-store");
 
 
@@ -146,8 +146,8 @@ export async function fetchCompletionConfig(): Promise<CompletionConfig> {
             additionalResourceDirectory: config.get("additionalResourcesDirectory") || "",
             contextOmission: config.get("defaultsRecommended.experimentalContextOmission") || false,
             sourceBookWhitelist: config.get("defaultsRecommended.sourceBookWhitelist") || "",
-            maxTokens: config.get("max_tokens") || 2048,
-            temperature: config.get("temperature") || 0.8,
+            maxTokens: config.get("max_tokens") || MAX_TOKENS,
+            temperature: config.get("temperature") || TEMPERATURE,
             mainChatLanguage: config.get("main_chat_language") || "English",
             chatSystemMessage: config.get("chatSystemMessage") || "This is a chat between a helpful Bible translation assistant and a Bible translator...",
             debugMode: config.get("debugMode") || false
@@ -307,8 +307,8 @@ async function manuallySelectSourceTextFile(): Promise<string | null> {
         return null;
     }
 
-    const metadata = await readMetadataJson();
-    const sourceLanguageCode = metadata.languages.find((lang: any) => lang.projectStatus === 'source')?.tag || "";
+    const projectMetadata = await readMetadataJson();
+    const sourceLanguageCode = projectMetadata.languages.find((lang: any) => lang.projectStatus === 'source')?.tag || "";
 
     if (!sourceLanguageCode) {
         vscode.window.showErrorMessage("No source language specified in project metadata.");

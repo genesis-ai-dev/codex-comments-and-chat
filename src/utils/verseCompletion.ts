@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import axios from "axios";
-import { MAX_TOKENS, TEMPERATURE, CompletionConfig, readMetadataJson, findVerseRef, getAdditionalResources, findSourceText } from "../providers/translationSuggestions/inlineCompletionsProvider";
+import { CompletionConfig, readMetadataJson, findVerseRef, getAdditionalResources, findSourceText } from "../providers/translationSuggestions/inlineCompletionsProvider";
 
 const abort = false;
 
@@ -268,6 +268,17 @@ async function getSurroundingContext(sourceTextFilePath: string, verseRef: strin
                 let targetVerse = await findTargetVerse(ref);
                 if (targetVerse && targetVerse.trim() === ref) {
                     targetVerse = null;
+                }
+
+                if (targetVerse && (targetVerse.trim() === ref)) {
+                    targetVerse = null;
+                }
+
+                if (targetVerse) {
+                    const newlineIndex = targetVerse.indexOf('\n');
+                    if (newlineIndex !== -1) {
+                        targetVerse = targetVerse.substring(0, newlineIndex);
+                    }
                 }
 
                 if (sourceVerse && targetVerse) {
@@ -592,8 +603,8 @@ async function makeCompletionRequest(config: CompletionConfig, messages: any, cu
     try {
         const url = config.endpoint + "/chat/completions";
         const data = {
-            max_tokens: MAX_TOKENS,
-            temperature: TEMPERATURE,
+            max_tokens: config.maxTokens,
+            temperature: config.temperature,
             model: config.model,
             stream: false,
             messages,
