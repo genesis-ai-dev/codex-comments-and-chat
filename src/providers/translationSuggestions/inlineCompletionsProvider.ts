@@ -303,8 +303,14 @@ async function manuallySelectSourceTextFile(): Promise<string | null> {
     try {
         await vscode.workspace.fs.stat(sourceTextBiblesPath);
     } catch (error) {
-        vscode.window.showErrorMessage("Source text Bibles directory does not exist. Please check your workspace structure.");
-        return null;
+        // If the directory doesn't exist, create it
+        try {
+            await vscode.workspace.fs.createDirectory(sourceTextBiblesPath);
+            console.log("Created sourceTextBibles directory");
+        } catch (createError) {
+            vscode.window.showErrorMessage("Failed to create Source text Bibles directory. Please check your workspace structure and permissions.");
+            return null;
+        }
     }
 
     const projectMetadata = await readMetadataJson();
@@ -377,7 +383,7 @@ async function automaticalySelectSourceTextFile(): Promise<string | null> {
         const stat = await vscode.workspace.fs.stat(sourceTextBiblesPath);
         if (stat.type !== vscode.FileType.Directory) {
             vscode.window.showErrorMessage("The sourceTextBibles path exists but is not a directory. Please check your project structure.");
-            return null;
+            return manuallySelectSourceTextFile();
         }
 
         const files = await vscode.workspace.fs.readDirectory(sourceTextBiblesPath);
@@ -388,8 +394,8 @@ async function automaticalySelectSourceTextFile(): Promise<string | null> {
         if (bibleFiles.length > 0) {
             return vscode.Uri.joinPath(sourceTextBiblesPath, bibleFiles[0]).fsPath;
         } else {
-            vscode.window.showErrorMessage("No .bible files found in the sourceTextBibles directory.");
-            return null;
+            vscode.window.showWarningMessage("No .bible files found in the sourceTextBibles directory. Attempting manual selection.");
+            return manuallySelectSourceTextFile();
         }
     } catch (error) {
         if (error instanceof vscode.FileSystemError) {
@@ -404,7 +410,8 @@ async function automaticalySelectSourceTextFile(): Promise<string | null> {
             vscode.window.showErrorMessage(`Unexpected error: ${error}`);
         }
         console.error("Error in automaticalySelectSourceTextFile:", error);
-        return null;
+        vscode.window.showWarningMessage("Error accessing sourceTextBibles. Attempting manual selection.");
+        return manuallySelectSourceTextFile();
     }
 }
 
@@ -412,18 +419,17 @@ async function automaticalySelectSourceTextFile(): Promise<string | null> {
 async function handleBibleDownload(corpusMetadata: EbibleCorpusMetadata, workspaceRoot: string) {
     const vrefPath = await ensureVrefList(workspaceRoot);
 
-    const bibleTextPath = path.join(
-        workspaceRoot,
-        ".project", "sourceTextBibles",
-        corpusMetadata.file
-    );
+    // Ensure sourceTextBibles directory exists
+    const sourceTextBiblesPath = path.join(workspaceRoot, ".project", "sourceTextBibles");
+    await vscode.workspace.fs.createDirectory(vscode.Uri.file(sourceTextBiblesPath));
+
+    const bibleTextPath = path.join(sourceTextBiblesPath, corpusMetadata.file);
     const bibleTextPathUri = vscode.Uri.file(bibleTextPath);
     const LANG_TYPE = "source";
     await downloadEBibleText(corpusMetadata, workspaceRoot, LANG_TYPE);
     vscode.window.showInformationMessage(
         `Bible text for ${corpusMetadata.lang} downloaded successfully.`
     );
-
 
     // Read the vref.txt file and the newly downloaded bible text file
     const vrefFilePath = vscode.Uri.file(vrefPath);
