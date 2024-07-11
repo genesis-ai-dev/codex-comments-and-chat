@@ -507,6 +507,7 @@
     "@vscode/codicons": "^0.0.35",
     "@vscode/test-electron": "^2.3.10",
     "axios": "^1.7.2",
+    "child_process": "^1.0.2",
     "codex-types": "^0.0.2",
     "path": "^0.12.7",
     "vsce": "^2.15.0",
