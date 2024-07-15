@@ -98,13 +98,20 @@ async function checkVerseCompletionReady() {
   console.log("Checking if server is ready...");
   while (!serverReady) {
     if (Date.now() - startTime > timeout) {
-      vscode.window
+      await vscode.window
         .showErrorMessage(
-          "Server is not ready for inline completion after 2 minutes. Inline completion may not work or quality may be low. Consider reloading the window.",
-          "Reload Window"
+          "Server is not ready for inline completion after 2 minutes. Inline completion may not work or quality may be low. Consider reloading the window and the extensions.",
+          "Reload"
         )
         .then((selection) => {
-          if (selection === "Reload Window") {
+          if (selection === "Reload") {
+            vscode.commands.executeCommand(
+              "workbench.extensions.action.reinstall",
+              "codex-editor"
+            );
+            vscode.commands.executeCommand(
+              "workbench.extensions.action.refreshExtension"
+            );
             vscode.commands.executeCommand("workbench.action.reloadWindow");
           }
         });

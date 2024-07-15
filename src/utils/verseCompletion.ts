@@ -67,7 +67,7 @@ async function getVerseData(
       try {
         verseData.sourceVerse = await findSourceVerse(
           sourceTextFilePath,
-          verseData.verseRef ?? ""
+          verseData.verseRef
         );
       } catch (error) {
         console.warn(`Error finding source verse: ${error}`);
@@ -81,12 +81,12 @@ async function getVerseData(
     );
     verseData.currentVerse = extractCurrentVerse(
       textBeforeCursor,
-      verseData.verseRef ?? ""
+      verseData.verseRef
     );
 
     try {
       verseData.similarPairs = await getSimilarPairs(
-        verseData.verseRef ?? "",
+        verseData.verseRef,
         config.contextSize,
         config.sourceBookWhitelist
       );
@@ -99,7 +99,7 @@ async function getVerseData(
 
     try {
       verseData.otherResources = await getAdditionalResources(
-        verseData.verseRef ?? ""
+        verseData.verseRef
       );
     } catch (error) {
       console.warn(`Error getting additional resources: ${error}`);
@@ -111,7 +111,7 @@ async function getVerseData(
       if (sourceTextFilePath !== null)
         verseData.sourceChapter = await getSourceChapter(
           sourceTextFilePath,
-          verseData.verseRef ?? ""
+          verseData.verseRef
         );
     } catch (error) {
       console.warn(`Error getting source chapter: ${error}`);
@@ -123,7 +123,7 @@ async function getVerseData(
       if (sourceTextFilePath !== null)
         verseData.surroundingContext = await getSurroundingContext(
           sourceTextFilePath,
-          verseData.verseRef ?? "",
+          verseData.verseRef,
           config.contextSize
         );
     } catch (error) {
@@ -192,8 +192,6 @@ function getSimilarDrafts(
   sourceBookWhitelist: string
 ): Promise<any> {
   return Promise.resolve(
-    // pyMessenger.getSimilarDrafts(verseRef, similarPairsCount, sourceBookWhitelist),);
-    // Invoke the getSimilarDrafts command from the vscode extension
     vscode.commands.executeCommand(
       "codex-editor-extension.pythonMessenger",
       "getSimilarDrafts",
