@@ -233,9 +233,9 @@ async function getSimilarPairs(
       break;
     default:
       console.warn(
-        `Unknown context size: ${contextSize}. Defaulting to medium.`
+        `Unknown context size: ${contextSize}. Defaulting to large.`
       );
-      similarPairsCount = 7;
+      similarPairsCount = 10;
   }
 
   try {
@@ -247,7 +247,12 @@ async function getSimilarPairs(
     ]);
 
     if (Array.isArray(result)) {
-      const toRet = result
+      // Remove the element containing the verseRef
+      const filteredResult = result.filter(
+        (item) => !JSON.stringify(item).includes(verseRef)
+      );
+
+      const toRet = filteredResult
         .map((item) => JSON.stringify(item, null, 2))
         .join("\n\n");
       return toRet;
@@ -564,7 +569,7 @@ async function completeVerse(
     console.log("Config:", config);
     console.log("VerseData:", verseData);
 
-    const response: any = await vscode.commands.executeCommand(
+    const result = (await vscode.commands.executeCommand(
       "codex-editor-extension.pythonMessenger",
       "sendAPIRequest",
       {
@@ -585,20 +590,92 @@ async function completeVerse(
           surrounding_context: verseData.surroundingContext,
         },
       }
-    );
+    )) as { response: string; messages: any[] };
 
-    console.log("Response received in completeVerse:", response);
+    // Debug mode logging
+    if (
+      vscode.workspace.getConfiguration("translators-copilot").get("debugMode")
+    ) {
+      const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+      if (workspaceFolder) {
+        const logFilePath = vscode.Uri.joinPath(
+          workspaceFolder.uri,
+          "copilot-messages.log"
+        );
+        const logContent = `
+Timestamp: ${new Date().toISOString()}
 
-    if (response.error) {
-      console.error("API request error:", response.error);
-      throw new Error(`API request failed: ${response.error}`);
+Config:
+  Endpoint: ${config.endpoint}
+  API Key: ${config.apiKey.slice(0, 6)}...${config.apiKey.slice(-4)}
+  Model: ${config.model}
+  Max Tokens: ${config.maxTokens}
+  Temperature: ${config.temperature}
+
+VerseData:
+  Source Language Name: ${verseData.sourceLanguageName}
+  Verse Reference: ${verseData.verseRef}
+  Source Verse: ${verseData.sourceVerse}
+  Current Verse: ${verseData.currentVerse}
+  Similar Pairs: ${verseData.similarPairs
+    .split(" ")
+    .slice(0, 20)
+    .join(" ")} . . . ${verseData.similarPairs.split(" ").slice(-5).join(" ")}
+  Surrounding Context: ${verseData.surroundingContext
+    .split(" ")
+    .slice(0, 20)
+    .join(" ")} . . . ${verseData.surroundingContext
+          .split(" ")
+          .slice(-5)
+          .join(" ")}
+  Other Resources: ${verseData.otherResources
+    .split(" ")
+    .slice(0, 20)
+    .join(" ")} . . . ${verseData.otherResources.split(" ").slice(-5).join(" ")}
+
+Messages:
+${result.messages
+  .map((msg) => `Role: ${msg.role}\nContent: ${msg.content}`)
+  .join("\n\n")}
+
+Response: ${result.response}
+`;
+        try {
+          // Overwrite the file with new content
+          await vscode.workspace.fs.writeFile(
+            logFilePath,
+            Buffer.from(logContent)
+          );
+
+          // Show information message with buttons
+          vscode.window
+            .showInformationMessage(
+              "Debug log updated. You can view the log or turn off debug mode.",
+              "View Log",
+              "Turn Off Debug Mode"
+            )
+            .then((selection) => {
+              if (selection === "View Log") {
+                vscode.workspace.openTextDocument(logFilePath).then((doc) => {
+                  vscode.window.showTextDocument(doc);
+                });
+              } else if (selection === "Turn Off Debug Mode") {
+                vscode.workspace
+                  .getConfiguration("translators-copilot")
+                  .update("debugMode", false, true);
+              }
+            });
+        } catch (error) {
+          console.error("Error writing to debug log:", error);
+        }
+      }
     }
 
-    if (response.response) {
-      console.log("Successful response:", response.response);
-      return response.response;
+    if (result.response) {
+      console.log("Successful response:", result.response);
+      return result.response;
     } else {
-      console.error("Unexpected response format:", response);
+      console.error("Unexpected response format:", result);
       throw new Error("Unexpected response format");
     }
   } catch (error) {
