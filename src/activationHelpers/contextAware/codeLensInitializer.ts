@@ -92,15 +92,23 @@ export function getServerReadyStatus() {
 async function checkVerseCompletionReady() {
   const startTime = Date.now();
   const timeout = 2 * 60 * 1000; // 2 minutes in milliseconds
-  const refs: string[] = ["GEN 1:1", "EXO 1:7", "MAT 1:5"];
+  const refs: string[] = ["GEN 1:1", "EXO 1:7", "MAT 1:5"]; //cycling different refs seems to help getSimilarDrafts to load correctly.
   let n = 0;
 
   console.log("Checking if server is ready...");
   while (!serverReady) {
     if (Date.now() - startTime > timeout) {
-      vscode.window.showErrorMessage(
-        "Server is not ready for inline completion after 2 minutes. Consider reloading the window."
-      );
+      vscode.window
+        .showErrorMessage(
+          "Server is not ready for inline completion after 2 minutes. Inline completion may not work or quality may be low. Consider reloading the window.",
+          "Reload Window"
+        )
+        .then((selection) => {
+          if (selection === "Reload Window") {
+            vscode.commands.executeCommand("workbench.action.reloadWindow");
+          }
+        });
+      serverReady = true;
       return;
     }
 
