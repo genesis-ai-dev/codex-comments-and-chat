@@ -14,9 +14,9 @@ import {
 import { VerseDataReader } from "../../utils/chatContext";
 
 const config = vscode.workspace.getConfiguration("translators-copilot");
-const endpoint = config.get("llmEndpoint"); // NOTE: config.endpoint is reserved so we must have unique name
+const endpoint = config.get("defaultsRecommended.llmEndpoint");
 const apiKey = config.get("api_key");
-const model = config.get("model");
+const model = config.get("defaultsRecommended.model");
 const maxTokens = config.get("max_tokens");
 const temperature = config.get("temperature");
 const maxLength = 2048;
@@ -107,7 +107,8 @@ const loadWebviewHtml = (
       Use a content security policy to only allow loading images from https or from our extension directory,
       and only allow scripts that have a specific nonce.
     -->
-    <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webviewView.webview.cspSource
+    <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${
+      webviewView.webview.cspSource
     }; script-src 'nonce-${nonce}';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="${styleResetUri}" rel="stylesheet">
@@ -256,7 +257,7 @@ export class CustomWebviewProvider {
         verseNotes, // This should work, but doesn't, to pass the data to the webview.
       },
     };
-    console.log('in customChatWebviewProvider', message);
+    console.log("in customChatWebviewProvider", message);
     webviewView.webview.postMessage(message);
   }
 
@@ -321,23 +322,31 @@ export class CustomWebviewProvider {
         try {
           switch (message.command) {
             case "fetch": {
-              const mainChatLanguage = vscode.workspace.getConfiguration('translators-copilot').get('main_chat_language', 'English');
+              const mainChatLanguage = vscode.workspace
+                .getConfiguration("translators-copilot")
+                .get("main_chat_language", "English");
 
               abortController = new AbortController();
               const url = endpoint + "/chat/completions";
-              const messages = JSON.parse(message.messages) as ChatMessageWithContext[];
+              const messages = JSON.parse(
+                message.messages
+              ) as ChatMessageWithContext[];
 
-              const systemMessage = messages.find((message) => message.role === 'system');
+              const systemMessage = messages.find(
+                (message) => message.role === "system"
+              );
 
               if (!systemMessage) {
                 messages.unshift({
-                  content: vscode.workspace.getConfiguration('translators-copilot').get('chatSystemMessage', ''),
-                  role: 'system',
+                  content: vscode.workspace
+                    .getConfiguration("translators-copilot")
+                    .get("chatSystemMessage", ""),
+                  role: "system",
                   createdAt: new Date().toISOString(),
                 });
               }
 
-              if (messages[0].role === 'system') {
+              if (messages[0].role === "system") {
                 const accessibilityNote = `\n\nNote carefully, 'assistant' must always respond to 'user' in ${mainChatLanguage}, even if the user has used some English or another language to communicate. It is *critical for accessibility* to respond only in ${mainChatLanguage} (though you can translate some piece of text into any language 'user' requests)`;
                 if (!messages[0].content.includes(accessibilityNote)) {
                   messages[0].content += `${accessibilityNote}`;
@@ -449,18 +458,18 @@ export class CustomWebviewProvider {
               );
               break;
             }
-            case 'openContextItem': {
-              console.log('openContextItem', message);
+            case "openContextItem": {
+              console.log("openContextItem", message);
               const vrefRegex = /[a-zA-Z]+\s+\d+:\d+/;
               const vref = message.text.match(vrefRegex)?.[0];
               if (vref) {
                 try {
-                  if (message.text.startsWith('Notes for')) {
+                  if (message.text.startsWith("Notes for")) {
                     await vscode.commands.executeCommand(
                       "codex-editor-extension.showReferences",
                       vref
                     );
-                  } else if (message.text.startsWith('Questions for')) {
+                  } else if (message.text.startsWith("Questions for")) {
                     await vscode.commands.executeCommand(
                       "codex-editor-extension.showReferences",
                       vref
@@ -468,10 +477,10 @@ export class CustomWebviewProvider {
                     // There is no command in the codex-editor-extension to open the Questions.
                   }
                 } catch (error) {
-                  console.error('Failed to execute command:', error);
+                  console.error("Failed to execute command:", error);
                 }
               } else {
-                console.error('Vref not found in message text');
+                console.error("Vref not found in message text");
               }
               break;
             }

@@ -7,6 +7,7 @@ import {
   getEBCorpusMetadataByLanguageCode,
 } from "../../utils/ebibleCorpusUtils";
 import * as path from "path";
+import { getServerReadyStatus } from "../../activationHelpers/contextAware/codeLensInitializer";
 
 let shouldProvideCompletion = false;
 let isAutocompletingInProgress = false;
@@ -88,6 +89,10 @@ export async function provideInlineCompletionItems(
   token: vscode.CancellationToken
 ): Promise<vscode.InlineCompletionItem[] | undefined> {
   try {
+    if (!getServerReadyStatus()) {
+      vscode.window.showInformationMessage("Waiting for server to be ready...");
+      return undefined;
+    }
     if (!shouldProvideCompletion || token.isCancellationRequested) {
       return undefined;
     }
