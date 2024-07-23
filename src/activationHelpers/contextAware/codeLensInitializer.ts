@@ -17,7 +17,6 @@ export async function registerCodeLensProviders(
 
 async function initializeExtension(context: vscode.ExtensionContext) {
   await checkVerseCompletionReady();
-  await waitForServerReady();
 
   try {
     setupStatusBar(context);
@@ -74,19 +73,19 @@ function handleActivationError(error: unknown) {
   );
 }
 
-async function waitForServerReady() {
-  const timeout = 2 * 60 * 1000; // 2 minutes timeout
-  const startTime = Date.now();
+// async function waitForServerReady() {
+//   const timeout = 2 * 60 * 1000; // 2 minutes timeout
+//   const startTime = Date.now();
 
-  while (!serverReady) {
-    if (Date.now() - startTime > timeout) {
-      throw new Error(
-        "Server not ready after 2 minutes. Activation timed out."
-      );
-    }
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Check every second
-  }
-}
+//   while (!serverReady) {
+//     if (Date.now() - startTime > timeout) {
+//       throw new Error(
+//         "Server not ready after 2 minutes. Activation timed out."
+//       );
+//     }
+//     await new Promise((resolve) => setTimeout(resolve, 1000)); // Check every second
+//   }
+// }
 
 async function checkVerseCompletionReady() {
   const startTime = Date.now();
@@ -172,8 +171,8 @@ function showServerNotReadyError() {
         vscode.commands.executeCommand(
           "codex-project-manager.reinstallExtensions",
           [
-            "project-accelerate.codex-editor-extension",
             "project-accelerate.codex-copilot",
+            "project-accelerate.codex-editor-extension",
           ]
         );
       }
