@@ -2,80 +2,83 @@ import * as vscode from "vscode";
 import {
   triggerInlineCompletion,
   provideInlineCompletionItems,
+  triggerManualSourceSelection,
 } from "../../providers/translationSuggestions/inlineCompletionsProvider";
 import VerseCompletionCodeLensProvider from "../../providers/translationSuggestions/verseCompletionCodeLensProvider";
 
 let statusBarItem: vscode.StatusBarItem;
 let serverReady = false;
 
-checkVerseCompletionReady();
-
 export async function registerCodeLensProviders(
   context: vscode.ExtensionContext
 ) {
-  // Wait for the server to be ready
+  await initializeExtension(context);
+}
+
+async function initializeExtension(context: vscode.ExtensionContext) {
+  await checkVerseCompletionReady();
   await waitForServerReady();
 
   try {
+    setupStatusBar(context);
+    registerLanguageProviders(context);
+    registerCommands(context);
     vscode.window.showInformationMessage("Translators Copilot is now active!");
-
-    statusBarItem = vscode.window.createStatusBarItem(
-      vscode.StatusBarAlignment.Right,
-      100
-    );
-    context.subscriptions.push(statusBarItem);
-
-    const languages = ["scripture"];
-    const disposables = languages.map((language) => {
-      return vscode.languages.registerInlineCompletionItemProvider(language, {
-        provideInlineCompletionItems,
-      });
-    });
-    disposables.forEach((disposable) => context.subscriptions.push(disposable));
-
-    const commandDisposable = vscode.commands.registerCommand(
-      "extension.triggerInlineCompletion",
-      async () => {
-        await triggerInlineCompletion(statusBarItem);
-      }
-    );
-
-    context.subscriptions.push(commandDisposable);
-
-    // Register the manual source text selection command
-    const manualSourceTextSelectionDisposable = vscode.commands.registerCommand(
-      "extension.manualSourceTextSelection",
-      async () => {
-        // Import the function from inlineCompletionProvider
-        const { triggerManualSourceSelection } = await import(
-          "../../providers/translationSuggestions/inlineCompletionsProvider"
-        );
-        await triggerManualSourceSelection();
-      }
-    );
-
-    context.subscriptions.push(manualSourceTextSelectionDisposable);
-
-    // Register the CodeLensProvider
-    context.subscriptions.push(
-      vscode.languages.registerCodeLensProvider(
-        { language: "scripture" },
-        new VerseCompletionCodeLensProvider()
-      )
-    );
   } catch (error) {
-    console.error("Error activating extension", error);
-    vscode.window.showErrorMessage(
-      "Failed to activate Translators Copilot. Please check the logs for details."
-    );
+    handleActivationError(error);
   }
+}
+
+function setupStatusBar(context: vscode.ExtensionContext) {
+  statusBarItem = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Right,
+    100
+  );
+  context.subscriptions.push(statusBarItem);
+}
+
+function registerLanguageProviders(context: vscode.ExtensionContext) {
+  const languages = ["scripture"];
+  languages.forEach((language) => {
+    const disposable = vscode.languages.registerInlineCompletionItemProvider(
+      language,
+      { provideInlineCompletionItems }
+    );
+    context.subscriptions.push(disposable);
+  });
+
+  context.subscriptions.push(
+    vscode.languages.registerCodeLensProvider(
+      { language: "scripture" },
+      new VerseCompletionCodeLensProvider()
+    )
+  );
+}
+
+function registerCommands(context: vscode.ExtensionContext) {
+  context.subscriptions.push(
+    vscode.commands.registerCommand("extension.triggerInlineCompletion", () =>
+      triggerInlineCompletion(statusBarItem)
+    ),
+    vscode.commands.registerCommand(
+      "extension.manualSourceTextSelection",
+      triggerManualSourceSelection
+    )
+  );
+}
+
+function handleActivationError(error: unknown) {
+  console.error("Error activating extension", error);
+  vscode.window.showErrorMessage(
+    "Failed to activate Translators Copilot. Please check the logs for details."
+  );
 }
 
 async function waitForServerReady() {
   const timeout = 2 * 60 * 1000; // 2 minutes timeout
   const startTime = Date.now();
 
-  while (!getServerReadyStatus()) {
+  while (!serverReady) {
     if (Date.now() - startTime > timeout) {
       throw new Error(
         "Server not ready after 2 minutes. Activation timed out."
@@ -85,58 +88,101 @@ async function waitForServerReady() {
   }
 }
 
-export function getServerReadyStatus() {
-  return serverReady;
-}
-
 async function checkVerseCompletionReady() {
   const startTime = Date.now();
-  const timeout = 2 * 60 * 1000; // 2 minutes in milliseconds
-  const refs: string[] = ["GEN 1:1", "EXO 1:7", "MAT 1:5"]; //cycling different refs seems to help getSimilarDrafts to load correctly.
-  let n = 0;
+  const timeout = 2 * 60 * 1000; // 2 minutes timeout
+  const refs = ["GEN 1:1", "EXO 1:7", "MAT 1:5"];
+  let attempt = 0;
 
-  console.log("Checking if server is ready...");
-  while (!serverReady) {
-    if (Date.now() - startTime > timeout) {
-      await vscode.window
-        .showErrorMessage(
-          "Server is not ready for inline completion after 2 minutes. Inline completion may not work or quality may be low. Consider reloading the window and the extensions.",
-          "Reload"
-        )
-        .then((selection) => {
-          if (selection === "Reload") {
-            vscode.commands.executeCommand(
-              "workbench.extensions.action.reinstall",
-              "codex-editor"
-            );
-            vscode.commands.executeCommand(
-              "workbench.extensions.action.refreshExtension"
-            );
-            vscode.commands.executeCommand("workbench.action.reloadWindow");
-          }
-        });
-      serverReady = true;
-      return;
-    }
+  const statusBarItem = createLoadingStatusBarItem();
 
+  while (!serverReady && Date.now() - startTime <= timeout) {
     try {
-      console.log("Checking if server is ready...");
-      const result = await vscode.commands.executeCommand(
-        "codex-editor-extension.pythonMessenger",
-        "isAPIHandlerReady",
-        refs[n % 3]
-      );
-      if (result) {
+      const result = await pingServer(refs[attempt % refs.length]);
+      if (isServerReady(result)) {
         serverReady = true;
         break;
       }
     } catch (error) {
       console.log("Server is not ready yet:", error);
     }
-    n++;
+    attempt++;
     await new Promise((resolve) => setTimeout(resolve, 2000));
   }
-  console.log("Server is ready. You can now use inline completion.");
+
+  handleServerReadyStatus(statusBarItem, startTime, timeout);
+}
+
+function createLoadingStatusBarItem() {
+  const item = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Left,
+    100
+  );
+  item.text = "$(sync~spin) Initializing Copilot Extension...";
+  item.show();
+  return item;
+}
+
+async function pingServer(ref: string) {
+  console.log("Pinging server...");
+  return vscode.commands.executeCommand(
+    "codex-editor-extension.pythonMessenger",
+    "checkAPIHandlerReadiness",
+    ref
+  ) as Promise<
+    [{ response: string }, { ref: string; source: string; target: string }]
+  >;
+}
+
+function isServerReady(
+  result: [
+    { response: string },
+    { ref: string; source: string; target: string }
+  ]
+) {
+  return (
+    result[0].response === "pong" &&
+    result[1].source.length > 0 &&
+    result[1].target.length > 0
+  );
+}
+
+function handleServerReadyStatus(
+  statusBarItem: vscode.StatusBarItem,
+  startTime: number,
+  timeout: number
+) {
+  if (!serverReady && Date.now() - startTime > timeout) {
+    showServerNotReadyError();
+  } else {
+    console.log("Server is ready.");
+  }
+  statusBarItem.hide();
+  statusBarItem.dispose();
+}
+
+function showServerNotReadyError() {
+  vscode.window
+    .showErrorMessage(
+      "Server is not ready for inline completion after 2 minutes. Consider reinstalling the associated extensions.",
+      "Reinstall"
+    )
+    .then((selection) => {
+      if (selection === "Reinstall") {
+        vscode.commands.executeCommand(
+          "codex-project-manager.reinstallExtensions",
+          [
+            "project-accelerate.codex-editor-extension",
+            "project-accelerate.codex-copilot",
+          ]
+        );
+      }
+    });
+  serverReady = true;
+}
+
+export function getServerReadyStatus() {
+  return serverReady;
 }
 
 export function deactivate() {
