@@ -1,5 +1,8 @@
 # Codex Assistant and Comments Extension
 
+> **⚠️ Warning: This extension is deprecated.**  
+> The Codex Assistant and Comments Extension is no longer actively maintained. We recommend migrating to the `project-accelerate.codex-editor-extension` for continued support and new features. The extension will currently prompt you to install the new extension if you have the old one installed.
+
 The Codex Assistant and Comments Extension is a streamlined Visual Studio Code extension crafted to enhance collaboration and provide AI-powered translation assistance within scripture translation projects. This extension focuses on enabling robust commenting features within `.codex`, `.bible`, and `.scripture` files, and introduces two pivotal webviews: the Translator's Copilot for AI chat-based translation support, and a comprehensive comment viewer and editor for effective communication and review.
 
 > Note: This extension serves as a specialized component of the larger Codex Scripture Editor Extension suite, with a concentrated emphasis on comments and AI-assisted translation. It is under active development, and we encourage the community to share feedback and report issues via our [GitHub repository](https://github.com/genesis-ai-dev/codex-assistant-comments).
